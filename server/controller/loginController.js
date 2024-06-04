@@ -23,7 +23,7 @@ module.exports ={
             pool.getConnection(function(err, connection) {
                 if (err) throw err;
                 connection.query(
-                    `SELECT * FROM user WHERE email = ? AND password = SHA2(?,512)`
+                    `SELECT * FROM user WHERE email = ? OR username = ? AND password = SHA2(?,512)`
                 , [email, password],function (error, results) {
                     if (error) throw error;  
                     if (results.length > 0) {
@@ -41,7 +41,7 @@ module.exports ={
                 connection.release();
             })
         } else {
-            res.redirect('/login');
+            res.redirect('/dashboard-admin');
             res.end();
         }
     },
