@@ -41,7 +41,7 @@ module.exports ={
                 connection.release();
             })
         } else {
-            res.redirect('/dashboard-admin');
+            res.redirect('/dashboard-user');
             res.end();
         }
     },
