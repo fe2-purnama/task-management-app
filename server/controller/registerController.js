@@ -1,39 +1,49 @@
-const config = require('../library/database');
+const connection = require('../library/database');
 
-let mysql      = require('mysql');
-let pool       = mysql.createPool(config);
-
-pool.on('error',(err)=> {
-    console.error(err);
-});
-
-module.exports ={
-    formRegister(req,res){
+const formRegister = function (req,res){
         res.render("register",{
             url : 'http://localhost:5050/',
         });
-    },
-    saveRegister(req,res){
+    }
+const saveRegister = function (req,res){
         let username = req.body.username;
         let email = req.body.email;
         let password = req.body.pass;
+        let role = 'user';
         if (username && email && password) {
-            pool.getConnection(function(err, connection) {
-                if (err) throw err;
-                connection.query(
-                    `INSERT INTO user (username,email,password) VALUES (?,?,SHA2(?,512));`
-                , [username, email, password],function (error, results) {
+            connection.query(
+                'SELECT email, username FROM user WHERE email = ? OR username = ?',
+                [email, username],
+                function (error, results) {
                     if (error) throw error;
-                    req.flash('color', 'success');
-                    req.flash('status', 'Yes..');
-                    req.flash('message', 'Registrasi berhasil');
-                    res.redirect('/login');
-                });
-                connection.release();
-            })
+    
+                    if (results.length > 0) {
+                        let message = 'Email atau username sudah terdaftar';
+                        req.flash('color', 'danger');
+                        req.flash('status', 'Oops..');
+                        req.flash('message', message);
+                        res.redirect('/register');
+                    } else {
+                        connection.query(
+                            'INSERT INTO user (username, email, password, role) VALUES (?, ?, SHA2(?, 512), ?)',
+                            [username, email, password, role],
+                            function (error, results) {
+                                if (error) throw error;
+                                req.flash('color', 'success');
+                                req.flash('status', 'Yes..');
+                                req.flash('message', 'Registrasi berhasil');
+                                res.redirect('/login');
+                            }
+                        );
+                    }
+                }
+            );
         } else {
-            res.redirect('/login');
+            res.redirect('/register');
             res.end();
         }
     }
+module.exports = {
+    formRegister,
+    saveRegister
 }
