@@ -13,7 +13,7 @@ const profile = function (req, res) {
             }
             if (results.length > 0) {
                 res.render("profile", {
-                    url: 'http://localhost:5050/',
+                    url: 'http://localhost:3004/',
                     userName: req.session.username,
                     nama: results[0]['username'],
                     email: results[0]['email']

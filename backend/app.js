@@ -5,7 +5,6 @@ const path = require("path");
 const flash = require("req-flash");
 const app = express();
 
-const indexRouter = require("./routes/index");
 const loginRoutes = require("./routes/login");
 const registerRoutes = require("./routes/register");
 const userRoutes = require("./routes/user");
@@ -32,13 +31,12 @@ app.use(flash());
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
-app.use("/", indexRouter);
 app.use("/login", loginRoutes);
 app.use("/register", registerRoutes);
 app.use("/users", userRoutes);
 app.use("/projects", projectRoutes);
 app.use("/profile", profileRoutes);
 
-app.listen(5050, () => {
-  console.log("Server Berjalan di Port : " + 5050);
+app.listen(3004, () => {
+  console.log("Server Berjalan di Port : " + 3004);
 });

@@ -2,7 +2,7 @@ const connection = require('../library/database');
 
 const login = function (req,res){
         res.render("login",{
-            url : 'http://localhost:5050/',
+            url : 'http://localhost:3004/',
             colorFlash: req.flash('color'),
             statusFlash: req.flash('status'),
             pesanFlash: req.flash('message'),

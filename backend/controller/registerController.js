@@ -2,7 +2,7 @@ const connection = require('../library/database');
 
 const formRegister = function (req, res) {
     res.render("register", {
-        url: 'http://localhost:5050/',
+        url: 'http://localhost:3004/',
     });
 };
 
