@@ -1,0 +1,214 @@
+/* sidebar.css */
+.sidebar-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  z-index: 1;
+  position: sticky;
+  top: 0;
+  /* Lebar sidebar */
+  background-color: white; /* Warna background sidebar */
+}
+
+.sidebar {
+  background-color: white;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); 
+  transition: none;
+}
+
+.profile-info {
+  display: flex;
+  align-items: center;
+}
+
+.profile-picture {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.profile-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.username {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.email {
+  font-size: 0.8rem;
+  color: #888;
+}
+
+.email {
+  font-size: 9px;
+}
+
+.logo {
+  width: 18px;
+  height: 15px;
+  margin: 0;
+}
+
+.activeClicked {
+  background-color: #57A9CF !important;
+  color: #ffffff !important;
+  border-radius: 20px !important;
+}
+
+.sc-Nxspf {
+  font-weight: bold;
+}
+
+.sc-Nxspf:hover {
+  font-weight: bold;
+  color: #57A9CF;
+}
+
+.logout-button:hover {
+  background-color: red; /* Mengubah warna background saat tombol dihover */
+  color: white; /* Mengubah warna teks saat tombol dihover */
+}
+
+a.activeClicked .sc-Nxspf {
+  background-color: #57A9CF !important;
+  color: #ffffff !important;
+  border-radius: 20px !important;
+}
+
+a.activeClicked .sc-Nxspf::before,
+a.activeClicked .sc-Nxspf::after {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+li.activeClicked,
+li.activeClicked::before,
+li.activeClicked::after {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+li {
+  background-color: transparent !important;
+}
+
+.sc-cfxfcM {
+  background-color: transparent !important;
+}
+
+.btn-logout {
+  border: none;
+  padding: 5px 10px;
+  color: rgb(242, 32, 32) !important;
+  font-weight: bold;
+  border-radius: 20px;
+  font-size: 14px;
+}
+
+.btn-logout:hover {
+  color: rgb(186, 9, 9) !important;
+}
+
+.btn-logout:after {
+  color: rgb(186, 9, 9) !important;
+}
+
+/* Untuk dark mode *//* Tambahkan aturan CSS untuk dark mode dan light mode */
+.sidebar-container.dark-mode {
+  background-color: #333333;
+}
+
+.sidebar-container.dark-mode .logo-container a,
+.sidebar-container.dark-mode .profile-details,
+.sidebar-container.dark-mode .CDBSidebarMenuItem {
+  color: white;
+}
+
+.sidebar-container.light-mode {
+  background-color: white;
+}
+
+.sidebar-container.light-mode .logo-container a,
+.sidebar-container.light-mode .profile-details,
+.sidebar-container.light-mode .CDBSidebarMenuItem {
+  color: black;
+}
+
+.add-new-project{
+  color: #5dc2f1 !important;
+}
+.collapse-scroll {
+  max-height: 180px; /* Adjust the height as needed */
+  overflow-y: auto;
+}
+
+.sidebar-container {
+  height: 100vh;
+
+}
+
+.light-mode {
+  background-color: white;
+  color: black;
+}
+
+.dark-mode {
+  background-color: #333;
+  color: white;
+}
+
+.profile-picture {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profile-info {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.profile-details {
+  margin-left: 10px;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  width: 30px;
+  height: 30px;
+  margin-right: 10px;
+}
+
+.add-new-project {
+  padding-left: 10px;
+}
+
+
+/* Custom scrollbar styles */
+.collapse-scroll::-webkit-scrollbar {
+  width: 8px; /* Width of the scrollbar */
+  
+}
+
+.collapse-scroll::-webkit-scrollbar-track {
+  background: transparent; /* Background of the track */
+}
+
+.collapse-scroll::-webkit-scrollbar-thumb {
+  background: #57a9cf71; /* Scrollbar thumb with reduced opacity */
+  border-radius: 4px; /* Rounded corners for the scrollbar thumb */
+}
+
+.collapse-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.4); /* Slightly more visible on hover */
+}
