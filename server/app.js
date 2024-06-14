@@ -10,6 +10,7 @@ const loginRoutes = require("./routes/login");
 const registerRoutes = require("./routes/register");
 const userRoutes = require("./routes/user");
 const projectRoutes = require("./routes/project");
+const profileRoutes = require("./routes/profile");
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -36,6 +37,7 @@ app.use("/login", loginRoutes);
 app.use("/register", registerRoutes);
 app.use("/users", userRoutes);
 app.use("/projects", projectRoutes);
+app.use("/profile", profileRoutes);
 
 app.listen(5050, () => {
   console.log("Server Berjalan di Port : " + 5050);

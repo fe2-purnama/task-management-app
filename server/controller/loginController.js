@@ -25,7 +25,7 @@ const loginAuth = function (req,res){
                     if (results[0].role === 'admin') {
                         res.redirect('dashboard-admin');
                     } else {
-                        res.redirect('dashboard-user')
+                        res.redirect('profile')
                     }
                 } else {
                     req.flash('color', 'danger');

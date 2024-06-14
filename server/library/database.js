@@ -1,6 +1,4 @@
 let mysql = require('mysql');
-
-//konfigurasi untuk koneksi database MySql
  
 let connection = mysql.createConnection({
    host:        'localhost',
@@ -9,7 +7,6 @@ let connection = mysql.createConnection({
    database:    'task_manager'
  });
 
-//Kondisi untuk mengecek database berjalan atau tidak 
 connection.connect(function(error){
    if(!!error){
      console.log(error);
