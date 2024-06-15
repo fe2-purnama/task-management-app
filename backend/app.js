@@ -37,6 +37,10 @@ app.use("/users", userRoutes);
 app.use("/projects", projectRoutes);
 app.use("/profile", profileRoutes);
 
+app.get("/", (req, res) => {
+  res.send(" ");
+});
+
 app.listen(3004, () => {
   console.log("Server Berjalan di Port : " + 3004);
 });

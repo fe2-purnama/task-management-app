@@ -1,8 +1,8 @@
 const connection = require('../library/database');
 
 const formRegister = function (req, res) {
-    res.render("register", {
-        url: 'http://localhost:3004/',
+    res.status(200).json({
+        url: 'http://localhost:3004/register',
     });
 };
 

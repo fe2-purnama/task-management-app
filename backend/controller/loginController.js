@@ -1,8 +1,8 @@
 const connection = require('../library/database');
 
 const login = function (req,res){
-        res.render("login",{
-            url : 'http://localhost:3004/',
+    res.status(200).json({
+            url : 'http://localhost:3004/login',
             colorFlash: req.flash('color'),
             statusFlash: req.flash('status'),
             pesanFlash: req.flash('message'),
@@ -25,7 +25,7 @@ const loginAuth = function (req,res){
                     if (results[0].role === 'admin') {
                         res.redirect('dashboard-admin');
                     } else {
-                        res.redirect('profile')
+                        res.redirect('dashboard-user')
                     }
                 } else {
                     req.flash('color', 'danger');
