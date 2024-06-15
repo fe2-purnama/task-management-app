@@ -29,7 +29,7 @@ const saveRegister = function (req, res) {
                         function (error, results) {
                             if (error) throw error;
                             const userId = results.insertId;
-                            const projects = ['work', 'school', 'home'];
+                            const projects = ['Work', 'School', 'Home'];
                             const projectQueries = projects.map(project => {
                                 return new Promise((resolve, reject) => {
                                     connection.query(
