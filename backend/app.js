@@ -1,5 +1,7 @@
 const express = require("express");
 const session = require("express-session");
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
 const bodyParser = require("body-parser");
 const path = require("path");
 const flash = require("req-flash");
@@ -15,8 +17,10 @@ const sessionRouter = require('./routes/session');
 
 app.use(cors());
 
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(logger('dev'));
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
 
 app.use(
   session({

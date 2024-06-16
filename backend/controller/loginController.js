@@ -27,7 +27,6 @@ const loginAuth = function (req, res) {
                         role: results[0].role
                     };
                     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
-                    console.log('Generated JWT Token:', token);
                     req.session.token = token;
                     req.session.loggedin = true;
                     req.flash('color', 'success');
