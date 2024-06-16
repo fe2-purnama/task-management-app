@@ -1,10 +1,21 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const profileController = require('../controller/profileController');
-const upload = require('../library/multer');
-const verifyUser = require('../library/verify');
+const profileController = require("../controller/profileController");
+const upload = require("../library/multer");
+const { verifyToken, isLogin } = require("../library/verify");
 
-router.get('/', profileController.profile, verifyUser.isLogin);
-router.post('/update', upload.single('profile_image'), profileController.updateProfile, verifyUser.isLogin);
+// Middleware verifikasi token harus diterapkan sebelum memanggil controller
+router.use(verifyToken);
+
+// Rute untuk mendapatkan profil pengguna
+router.get("/", isLogin, profileController.profile);
+
+// Rute untuk memperbarui profil pengguna
+router.post(
+  "/update",
+  isLogin,
+  upload.single("profile_image"),
+  profileController.updateProfile
+);
 
 module.exports = router;

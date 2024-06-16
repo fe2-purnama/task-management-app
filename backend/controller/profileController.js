@@ -1,58 +1,72 @@
-const connection = require('../library/database');
-const cloudinary = require('../library/cloudinary');
+const connection = require("../library/database");
+const cloudinary = require("../library/cloudinary");
 
-const profile = async (req, res) => {
-    try {
-      const id = req.session.userid;
-      if (!id) {
-        return res.status(401).send('Unauthorized');
+const profile = (req, res) => {
+  const id_user = req.user.id_user; // Ambil ID pengguna dari token JWT yang terverifikasi
+  if (!id_user) {
+    return res.status(401).send("Unauthorized");
+  }
+
+  connection.query(
+    "SELECT * FROM user WHERE id_user = ?",
+    [id_user],
+    (error, results) => {
+      if (error) {
+        console.error("Error in profile function:", error);
+        return res.status(500).send("Internal Server Error");
       }
-  
-      const [results] = await connection.query(`SELECT * FROM user WHERE id_user = ?`, [id]);
+
       if (!results.length) {
-        return res.status(404).send('User not found');
+        return res.status(404).send("User not found");
       }
-  
+
       res.json({
-        url: 'http://localhost:3004/',
-        userName: req.session.username,
+        url: "http://localhost:3004/",
+        userName: req.user.username, // Ambil username dari token JWT yang terverifikasi
         nama: results[0].username,
         email: results[0].email,
-        profileImage: results[0].foto
+        profileImage: results[0].foto,
       });
-    } catch (error) {
-      console.error(error);
-      res.status(500).send('Internal Server Error');
     }
+  );
+};
+
+const updateProfile = (req, res) => {
+  const id_user = req.user.id_user; // Ambil ID pengguna dari token JWT yang terverifikasi
+  const updatedData = {
+    username: req.body.username,
+    email: req.body.email,
   };
 
-const updateProfile = async (req, res) => {
-  try {
-    const id = req.session.userid;
-    const updatedData = {
-      username: req.body.username,
-      email: req.body.email
-    };
+  const updateUser = () => {
+    connection.query(
+      "UPDATE user SET ? WHERE id_user = ?",
+      [updatedData, id_user],
+      (error, results) => {
+        if (error) {
+          console.error("Error in updateProfile function:", error);
+          return res.status(500).send("Internal Server Error");
+        }
+        res.send("Profile updated successfully");
+      }
+    );
+  };
 
-    if (req.file) {
-      const result = await cloudinary.uploader.upload(req.file.path);
-      updatedData.profile_image = result.secure_url;
-    }
-
-    const [existingUser] = await connection.query(`SELECT * FROM user WHERE (username = ? OR email = ?) AND id_user != ?`, [updatedData.username, updatedData.email, id]);
-    if (existingUser.length > 0) {
-      return res.status(400).send('Username or email already exists');
-    }
-
-    await connection.query(`UPDATE user SET ? WHERE id_user = ?`, [updatedData, id]);
-    res.send('Profile updated successfully');
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Internal Server Error');
+  if (req.file) {
+    cloudinary.uploader.upload(req.file.path, (error, result) => {
+      if (error) {
+        console.error("Error uploading image:", error);
+        return res.status(500).send("Error uploading image");
+      }
+      updatedData.foto = result.secure_url;
+      updateUser();
+    });
+  } else {
+    updateUser();
   }
 };
 
 module.exports = {
   profile,
-  updateProfile
+  updateProfile,
 };
