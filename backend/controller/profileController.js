@@ -38,7 +38,7 @@ const updateProfile = async (req, res) => {
     }
   
     const { username, email } = req.body; // Ambil data dari body request
-    let profileImage = req.body.profileImage; // URL gambar dari body request
+    let foto = req.body.foto; // URL gambar dari body request
   
     if (!username || !email) {
       return res.status(400).send("Bad Request: Username and email are required");
@@ -48,7 +48,7 @@ const updateProfile = async (req, res) => {
     if (req.file) {
       try {
         const result = await cloudinary.uploader.upload(req.file.path);
-        profileImage = result.secure_url;
+        foto = result.secure_url;
   
         fs.unlink(req.file.path, (err) => {
           if (err) {
@@ -66,7 +66,7 @@ const updateProfile = async (req, res) => {
   
     connection.query(
       "UPDATE user SET username = ?, email = ?, foto = ? WHERE id_user = ?",
-      [username, email, profileImage, id_user],
+      [username, email, foto, id_user],
       (error, results) => {
         if (error) {
           console.error("Error in updateProfile function:", error);
