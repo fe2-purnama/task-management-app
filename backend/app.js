@@ -12,6 +12,7 @@ const loginRoutes = require("./routes/login");
 const registerRoutes = require("./routes/register");
 const userRoutes = require("./routes/user");
 const projectRoutes = require("./routes/project");
+const taskRoutes = require("./routes/task");
 const profileRoutes = require("./routes/profile");
 const sessionRouter = require("./routes/session");
 
@@ -52,6 +53,7 @@ app.use("/login", loginRoutes);
 app.use("/register", registerRoutes);
 app.use("/users", userRoutes);
 app.use("/projects", projectRoutes);
+app.use("/:id_project/tasks", taskRoutes);
 app.use("/profile", profileRoutes);
 app.use("/session", sessionRouter);
 
