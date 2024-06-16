@@ -22,7 +22,7 @@ const loginAuth = function (req, res) {
                 if (error) throw error;
                 if (results.length > 0) {
                     const payload = {
-                        userid: results[0].user_id,
+                        userid: results[0].id_user,
                         username: results[0].username,
                         role: results[0].role
                     };
@@ -33,11 +33,14 @@ const loginAuth = function (req, res) {
                     req.flash('color', 'success');
                     req.flash('status', 'Success');
                     req.flash('message', 'Login berhasil');
-                    if (results[0].role === 'admin') {
-                        res.redirect('/dashboard-admin');
-                    } else {
-                        res.redirect('/dashboard-user');
-                    }
+
+                    // Send additional data in response
+                    res.status(200).json({
+                        username: results[0].username,
+                        email: results[0].email,
+                        role: results[0].role,
+                        token: token
+                    });
 
                 } else {
                     req.flash('color', 'danger');

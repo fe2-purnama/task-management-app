@@ -37,7 +37,7 @@ app.set("view engine", "ejs");
 app.use("/login", loginRoutes);
 app.use("/register", registerRoutes);
 app.use("/users", userRoutes);
-app.use("/dashboard-user", projectRoutes);
+app.use("/project", projectRoutes);
 app.use("/profile", profileRoutes);
 
 app.get("/", (req, res) => {
