@@ -45,13 +45,15 @@ const loginAuth = function (req, res) {
                 req.flash('status', 'Success');
                 req.flash('message', 'Login berhasil');
 
+                const profileImageUrl = results[0].foto;
+
                 return res.status(200).json({
                     username: results[0].username,
                     email: results[0].email,
                     role: results[0].role,
+                    foto: profileImageUrl,
                     token: token
                 });
-
             } else {
                 return res.status(400).json({
                     error: 'Akun tidak ditemukan'
@@ -60,6 +62,7 @@ const loginAuth = function (req, res) {
         }
     );
 }
+
 
 
 const logout = function (req, res) {
