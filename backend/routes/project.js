@@ -1,12 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const projectController = require("../controller/projectController");
-const verifyUser = require('../library/verify');
+const verifyUser = require("../library/verify");
 
-router.get("/", projectController.getAllProjects, verifyUser.isLogin);
-router.get("/:id", projectController.getProjectById, verifyUser.isLogin);
-router.post("/", projectController.createProject, verifyUser.isLogin);
-router.put("/:id", projectController.updateProject, verifyUser.isLogin);
-router.delete("/:id", projectController.deleteProject, verifyUser.isLogin);
+router.get("/", verifyUser.verifyToken, projectController.getAllProjects);
+router.get("/:id", verifyUser.verifyToken, projectController.getProjectById);
+router.post("/", verifyUser.verifyToken, projectController.createProject);
+router.put("/:id", verifyUser.verifyToken, projectController.updateProject);
+router.delete("/:id", verifyUser.verifyToken, projectController.deleteProject);
 
 module.exports = router;

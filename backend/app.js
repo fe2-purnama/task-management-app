@@ -1,7 +1,7 @@
 const express = require("express");
 const session = require("express-session");
-const cookieParser = require('cookie-parser');
-const logger = require('morgan');
+const cookieParser = require("cookie-parser");
+const logger = require("morgan");
 const bodyParser = require("body-parser");
 const path = require("path");
 const flash = require("req-flash");
@@ -13,11 +13,11 @@ const registerRoutes = require("./routes/register");
 const userRoutes = require("./routes/user");
 const projectRoutes = require("./routes/project");
 const profileRoutes = require("./routes/profile");
-const sessionRouter = require('./routes/session');
+const sessionRouter = require("./routes/session");
 
 app.use(cors());
 
-app.use(logger('dev'));
+app.use(logger("dev"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -36,9 +36,12 @@ app.use(
 );
 app.use(flash());
 
-app.use(function(req, res, next) {
-  res.setHeader('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
-  res.setHeader('Pragma', 'no-cache');
+app.use(function (req, res, next) {
+  res.setHeader(
+    "Cache-Control",
+    "no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0"
+  );
+  res.setHeader("Pragma", "no-cache");
   next();
 });
 
@@ -48,9 +51,9 @@ app.set("view engine", "ejs");
 app.use("/login", loginRoutes);
 app.use("/register", registerRoutes);
 app.use("/users", userRoutes);
-app.use("/project", projectRoutes);
+app.use("/projects", projectRoutes);
 app.use("/profile", profileRoutes);
-app.use('/session', sessionRouter);
+app.use("/session", sessionRouter);
 
 app.get("/", (req, res) => {
   res.send(" ");
