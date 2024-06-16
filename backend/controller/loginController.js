@@ -39,6 +39,8 @@ const loginAuth = async (req, res) => {
         req.flash("status", "Success");
         req.flash("message", "Login berhasil");
 
+        const profileImageUrl = results[0].foto;
+
         res.status(200).json({
           username: user.username,
           email: user.email,
