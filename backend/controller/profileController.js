@@ -1,79 +1,58 @@
 const connection = require('../library/database');
 const cloudinary = require('../library/cloudinary');
 
-const profile = function (req, res) {
-    let id = req.session.userid;
-    connection.query(
-        `SELECT * FROM user WHERE user_id = ?`,
-        [id],
-        function (error, results) {
-            if (error) {
-                console.error(error);
-                return res.status(500).send('Internal Server Error');
-            }
-            if (results.length > 0) {
-                res.render("profile", {
-                    url: 'http://localhost:3004/',
-                    userName: req.session.username,
-                    nama: results[0]['username'],
-                    email: results[0]['email']
-                });
-            } else {
-                res.status(404).send('User not found');
-            }
-        }
-    );
-};
+const profile = async (req, res) => {
+    try {
+      const id = req.session.userid;
+      if (!id) {
+        return res.status(401).send('Unauthorized');
+      }
+  
+      const [results] = await connection.query(`SELECT * FROM user WHERE id_user = ?`, [id]);
+      if (!results.length) {
+        return res.status(404).send('User not found');
+      }
+  
+      res.json({
+        url: 'http://localhost:3004/',
+        userName: req.session.username,
+        nama: results[0].username,
+        email: results[0].email,
+        profileImage: results[0].foto
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Internal Server Error');
+    }
+  };
 
-const updateProfile = async function (req, res) {
-    let id = req.session.userid;
-    let updatedData = {
-        username: req.body.username,
-        email: req.body.email
+const updateProfile = async (req, res) => {
+  try {
+    const id = req.session.userid;
+    const updatedData = {
+      username: req.body.username,
+      email: req.body.email
     };
 
     if (req.file) {
-        try {
-            const result = await cloudinary.uploader.upload(req.file.path);
-            updatedData.profile_image = result.secure_url;
-        } catch (error) {
-            console.error(error);
-            return res.status(500).send('Error uploading image');
-        }
+      const result = await cloudinary.uploader.upload(req.file.path);
+      updatedData.profile_image = result.secure_url;
     }
 
-    connection.query(
-        `SELECT * FROM user WHERE (username = ? OR email = ?) AND user_id != ?`,
-        [updatedData.username, updatedData.email, id],
-        function (error, results) {
-            if (error) {
-                console.error(error);
-                return res.status(500).send('Internal Server Error');
-            }
-            if (results.length > 0) {
-                return res.status(400).send('Username or email already exists');
-            }
+    const [existingUser] = await connection.query(`SELECT * FROM user WHERE (username = ? OR email = ?) AND id_user != ?`, [updatedData.username, updatedData.email, id]);
+    if (existingUser.length > 0) {
+      return res.status(400).send('Username or email already exists');
+    }
 
-            connection.query(
-                `UPDATE user SET ? WHERE user_id = ?`,
-                [updatedData, id],
-                function (error, results) {
-                    if (error) {
-                        console.error(error);
-                        return res.status(500).send('Internal Server Error');
-                    }
-                    if (results.affectedRows > 0) {
-                        res.send('Profile updated successfully');
-                    } else {
-                        res.status(404).send('User not found');
-                    }
-                }
-            );
-        }
-    );
+    await connection.query(`UPDATE user SET ? WHERE id_user = ?`, [updatedData, id]);
+    res.send('Profile updated successfully');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
 };
 
 module.exports = {
-    profile,
-    updateProfile
+  profile,
+  updateProfile
 };

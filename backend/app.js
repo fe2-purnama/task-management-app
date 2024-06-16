@@ -11,6 +11,8 @@ const userRoutes = require("./routes/user");
 const projectRoutes = require("./routes/project");
 const profileRoutes = require("./routes/profile");
 
+app.use(cors());
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
