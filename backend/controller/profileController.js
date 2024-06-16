@@ -50,6 +50,7 @@ const updateProfile = async (req, res) => {
         const result = await cloudinary.uploader.upload(req.file.path);
         foto = result.secure_url;
   
+        // Delete the file from local uploads folder after successful upload to Cloudinary
         fs.unlink(req.file.path, (err) => {
           if (err) {
             console.error("Error deleting local file:", err);

@@ -11,6 +11,6 @@ router.use(verifyToken);
 router.get("/", isLogin, profileController.profile);
 
 // Rute untuk memperbarui profil pengguna
-router.put("/", isLogin, upload.single('profileImage'), profileController.updateProfile);
+router.put("/", isLogin, upload.single('foto'), profileController.updateProfile);
 
 module.exports = router;
