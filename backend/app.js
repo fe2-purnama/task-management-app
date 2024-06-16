@@ -11,6 +11,7 @@ const registerRoutes = require("./routes/register");
 const userRoutes = require("./routes/user");
 const projectRoutes = require("./routes/project");
 const profileRoutes = require("./routes/profile");
+const sessionRouter = require('./routes/session');
 
 app.use(cors());
 
@@ -31,6 +32,12 @@ app.use(
 );
 app.use(flash());
 
+app.use(function(req, res, next) {
+  res.setHeader('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
+  res.setHeader('Pragma', 'no-cache');
+  next();
+});
+
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
@@ -39,6 +46,7 @@ app.use("/register", registerRoutes);
 app.use("/users", userRoutes);
 app.use("/project", projectRoutes);
 app.use("/profile", profileRoutes);
+app.use('/session', sessionRouter);
 
 app.get("/", (req, res) => {
   res.send(" ");

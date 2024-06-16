@@ -2,25 +2,29 @@ const connection = require('../library/database');
 const cloudinary = require('../library/cloudinary');
 
 const profile = async (req, res) => {
-    let id = req.session.userid
-    pool.getConnection(function(err, connection) {
-        if (err) throw err;
-        connection.query(
-            `
-            SELECT * FROM user where user_id = '${id}';
-            `
-        , function (error, results) {
-            if(error) throw error;
-            res.render("profile",{
-                url: 'http://localhost:3000/',
-                userName: req.session.username,
-                nama: results[0]['username'],
-                email: results[0]['email']
-            });
-        });
-        connection.release();
-    })
-}
+    try {
+      const id = req.session.userid;
+      if (!id) {
+        return res.status(401).send('Unauthorized');
+      }
+  
+      const [results] = await connection.query(`SELECT * FROM user WHERE id_user = ?`, [id]);
+      if (!results.length) {
+        return res.status(404).send('User not found');
+      }
+  
+      res.json({
+        url: 'http://localhost:3004/',
+        userName: req.session.username,
+        nama: results[0].username,
+        email: results[0].email,
+        profileImage: results[0].foto
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Internal Server Error');
+    }
+  };
 
 const updateProfile = async (req, res) => {
   try {

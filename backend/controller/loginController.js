@@ -47,6 +47,9 @@ const loginAuth = function (req, res) {
                     req.flash('status', 'Oops..');
                     req.flash('message', 'Akun tidak ditemukan');
                     res.redirect('/login');
+                    return res.status(400).json({
+                        error: 'Invalid credentials'
+                    });
                 }
             });
     } else {
@@ -54,6 +57,9 @@ const loginAuth = function (req, res) {
         req.flash('status', 'Warning');
         req.flash('message', 'Please enter a valid email/username and password');
         res.redirect('/login');
+        return res.status(400).json({
+            error: 'Missing credentials'
+        });
     }
 }
 
