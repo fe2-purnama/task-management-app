@@ -3,6 +3,7 @@ const session = require("express-session");
 const bodyParser = require("body-parser");
 const path = require("path");
 const flash = require("req-flash");
+const cors = require("cors");
 const app = express();
 
 const loginRoutes = require("./routes/login");

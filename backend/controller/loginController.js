@@ -29,6 +29,7 @@ const loginAuth = function (req, res) {
                     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
                     console.log('Generated JWT Token:', token);
                     req.session.token = token;
+                    req.session.loggedin = true;
                     req.flash('color', 'success');
                     req.flash('status', 'Success');
                     req.flash('message', 'Login berhasil');
