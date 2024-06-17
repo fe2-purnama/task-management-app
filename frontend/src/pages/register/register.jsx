@@ -1,27 +1,26 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable react/no-unescaped-entities */
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, Button, Form, Row, Col } from 'react-bootstrap';
-import './register.css';
-import NoticLogo from '../../assets/letter-n.png';
-import { Link } from 'react-router-dom';
-import { FaArrowLeft } from 'react-icons/fa';
+import { Card, Button, Form, Row, Col } from "react-bootstrap";
+import "./register.css";
+import NoticLogo from "../../assets/letter-n.png";
+import { Link } from "react-router-dom";
+import { FaArrowLeft } from "react-icons/fa";
 
 const Register = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [pass, setPassword] = useState("");
   const [role, setRole] = useState("user"); // Default role
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const user = { username, email, password, role };
+    const user = { username, email, pass, role };
 
     try {
-      const response = await fetch("http://localhost:5000/register", {
+      const response = await fetch("http://localhost:3004/register/save", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -35,9 +34,11 @@ const Register = () => {
       } else {
         // Handle error
         const errorData = await response.json();
+        setError(errorData.message);
         console.error("Error:", errorData.message);
       }
     } catch (error) {
+      setError("Failed to register. Please try again later.");
       console.error("Error:", error);
     }
   };
@@ -59,6 +60,7 @@ const Register = () => {
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
   };
+
   return (
     <div className="register-page">
       <div className="wave-container-atas mb-5">
@@ -81,12 +83,14 @@ const Register = () => {
       <div className="register-container">
         <Card className="register-card">
           <Card.Body className="register-card-body">
-          <div className="back-to-landing mb-3">
-              <Link to="/" className="text-decoration-none"> 
+            <div className="back-to-landing mb-3">
+              <Link to="/" className="text-decoration-none">
                 <FaArrowLeft className="me-2" />
               </Link>
             </div>
-            <Card.Title className="register-title text-center fw-bold mb-4">Register</Card.Title>
+            <Card.Title className="register-title text-center fw-bold mb-4">
+              Register
+            </Card.Title>
             <Form onSubmit={handleSubmit}>
               <Row>
                 <Col md={6}>
@@ -120,11 +124,13 @@ const Register = () => {
                 <Form.Control
                   type="password"
                   placeholder="Input password"
-                  value={password}
+                  value={pass}
                   onChange={(e) => setPassword(e.target.value)}
                   required
                 />
               </Form.Group>
+
+              {error && <p className="text-danger">{error}</p>}
 
               <div className="d-flex justify-content-center mb-3">
                 <Button type="submit" className="btn-register w-50">
@@ -135,7 +141,9 @@ const Register = () => {
 
             <div className="text-left mb-3 register-putih">
               Already have an account?{" "}
-              <a href="/login" className="text-decoration-none">Login here</a>
+              <a href="/login" className="text-decoration-none">
+                Login here
+              </a>
             </div>
 
             <div className="register-divider">

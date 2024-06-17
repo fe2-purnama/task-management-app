@@ -1,5 +1,6 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../../context/AuthContext";
+import axios from "axios";
 import {
   CDBSidebar,
   CDBSidebarContent,
@@ -9,10 +10,9 @@ import {
 } from "cdbreact";
 import { NavLink, useNavigate } from "react-router-dom";
 import "./sidebar.css";
-import profilePicture from "../../assets/restya.jpeg";
 import logo from "../../assets/letter-n.png";
 import { ThemeContext } from "../../context/ThemeContext";
-import { Collapse } from "react-bootstrap";
+import { Collapse, Modal, Button, Form } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -24,11 +24,50 @@ import {
 const Sidebar = ({ user }) => {
   const { logout } = useContext(AuthContext);
   const { darkMode } = useContext(ThemeContext);
-  const [openProjects, setOpenProjects] = useState(true); // Initially open
+  const [openProjects, setOpenProjects] = useState(true);
+  const [projects, setProjects] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [newProjectName, setNewProjectName] = useState("");
   const navigate = useNavigate();
 
-  const handleAddProject = () => {
-    navigate("/add-project");
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get("http://localhost:3004/projects", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setProjects(response.data);
+      } catch (error) {
+        console.error("Failed to fetch projects:", error);
+      }
+    };
+
+    fetchProjects();
+  }, []);
+
+  const handleAddProject = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.post(
+        "http://localhost:3004/projects",
+        { nama: newProjectName },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      console.log("Project added: ", response.data);
+      setNewProjectName("");
+      setShowModal(false);
+      window.location.reload(); // Refresh the page to load new projects
+    } catch (error) {
+      console.error("Failed to add project:", error);
+      alert(
+        `Failed to add project: ${
+          error.response ? error.response.data : error.message
+        }`
+      );
+    }
   };
 
   return (
@@ -53,7 +92,7 @@ const Sidebar = ({ user }) => {
           </div>
           <div className="profile-info">
             <img
-              src={profilePicture}
+              src={user && user.foto}
               alt="Profile"
               className="profile-picture"
             />
@@ -111,86 +150,35 @@ const Sidebar = ({ user }) => {
               </div>
               <Collapse in={openProjects}>
                 <div className="collapse-scroll">
-                  <NavLink to="/project" className="dropdown-item">
-                    <CDBSidebarMenuItem
-                      icon="home"
-                      style={{
-                        paddingLeft: "30px",
-                        color: darkMode ? "white" : "black",
-                      }}
+                  {projects.map((project) => (
+                    <NavLink
+                      key={project.id_project}
+                      to={`/project/${project.id_project}`}
+                      className="dropdown-item"
                     >
-                      Home
-                    </CDBSidebarMenuItem>
-                  </NavLink>
-                  <NavLink to="/school" className="dropdown-item">
-                    <CDBSidebarMenuItem
-                      icon="school"
-                      style={{
-                        paddingLeft: "30px",
-                        color: darkMode ? "white" : "black",
-                      }}
-                    >
-                      School
-                    </CDBSidebarMenuItem>
-                  </NavLink>
-                  <NavLink to="/work" className="dropdown-item">
-                    <CDBSidebarMenuItem
-                      icon="briefcase"
-                      style={{
-                        paddingLeft: "30px",
-                        color: darkMode ? "white" : "black",
-                      }}
-                    >
-                      Work
-                    </CDBSidebarMenuItem>
-                  </NavLink>
-                  <NavLink to="/work" className="dropdown-item">
-                    <CDBSidebarMenuItem
-                      icon="briefcase"
-                      style={{
-                        paddingLeft: "30px",
-                        color: darkMode ? "white" : "black",
-                      }}
-                    >
-                      Work
-                    </CDBSidebarMenuItem>
-                  </NavLink>
-                  <NavLink to="/work" className="dropdown-item">
-                    <CDBSidebarMenuItem
-                      icon="briefcase"
-                      style={{
-                        paddingLeft: "30px",
-                        color: darkMode ? "white" : "black",
-                      }}
-                    >
-                      Work
-                    </CDBSidebarMenuItem>
-                  </NavLink>
-                  <div
-                    onClick={handleAddProject}
-                    className="text-decoration-none dropdown-item"
-                    style={{
-                      paddingLeft: "40px",
-                      cursor: "pointer",
-                      color: "#0d6efd",
-                    }}
-                  ></div>
+                      <CDBSidebarMenuItem
+                        icon="circle"
+                        style={{
+                          paddingLeft: "30px",
+                          color: darkMode ? "white" : "black",
+                        }}
+                      >
+                        {project.nama}
+                      </CDBSidebarMenuItem>
+                    </NavLink>
+                  ))}
                 </div>
               </Collapse>
               <hr />
             </div>
-            <NavLink>
-              <CDBSidebarMenuItem
+            <CDBSidebarMenuItem
               className="add-new-project"
               icon="plus-square"
-              style={{
-                color: darkMode ? "white" : "black",
-              }}
+              style={{ color: darkMode ? "white" : "black" }}
+              onClick={() => setShowModal(true)}
             >
               Add new project
             </CDBSidebarMenuItem>
-            </NavLink>
-            
             <div
               style={{
                 color: "red",
@@ -206,6 +194,33 @@ const Sidebar = ({ user }) => {
           </CDBSidebarMenu>
         </CDBSidebarContent>
       </CDBSidebar>
+
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Add New Project</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group controlId="formProjectName">
+              <Form.Label>Project Name</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter project name"
+                value={newProjectName}
+                onChange={(e) => setNewProjectName(e.target.value)}
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleAddProject}>
+            Add Project
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };

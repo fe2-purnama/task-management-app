@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Table, Container, Button, Modal } from "react-bootstrap";
 import axios from "axios";
-import "./userList.css"
+import "./userList.css";
 
 class UserList extends Component {
   state = {
@@ -18,9 +18,9 @@ class UserList extends Component {
   fetchUsers = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get("http://localhost:5000/users", {
+      const response = await axios.get("http://localhost:3004/users", {
         headers: {
-          Authorization: token,
+          Authorization: `Bearer ${token}`, // Pastikan token dikirim dengan format Bearer
         },
       });
 
@@ -46,17 +46,17 @@ class UserList extends Component {
       try {
         const token = localStorage.getItem("token");
         await axios.delete(
-          `http://localhost:5000/users/${userToDelete.username}`,
+          `http://localhost:3004/users/${userToDelete.id_user}`,
           {
             headers: {
-              Authorization: token,
+              Authorization: `Bearer ${token}`, // Pastikan token dikirim dengan format Bearer
             },
           }
         );
 
         this.setState({
           users: this.state.users.filter(
-            (user) => user.username !== userToDelete.username
+            (user) => user.id_user !== userToDelete.id_user
           ),
           showModal: false,
           userToDelete: null,
@@ -76,7 +76,7 @@ class UserList extends Component {
       <Container>
         <h2 className="my-4 mt-5">User List</h2>
         {error && <p className="text-danger">{error}</p>}
-        <Table striped bordered hover >
+        <Table striped bordered hover>
           <thead>
             <tr>
               <th className="text-center">No</th>
@@ -87,7 +87,7 @@ class UserList extends Component {
           </thead>
           <tbody>
             {users.map((user, index) => (
-              <tr key={user.username}>
+              <tr key={user.id_user}>
                 <td className="text-center">{index + 1}</td>
                 <td>{user.username}</td>
                 <td>{user.email}</td>

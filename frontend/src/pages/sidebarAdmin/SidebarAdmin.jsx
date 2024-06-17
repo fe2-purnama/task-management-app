@@ -39,7 +39,7 @@ const SidebarAdmin = ({ user }) => {
           </div>
           <div className="profile-info">
             <img
-              src={profilePicture}
+              src={user && user.foto}
               alt="Profile"
               className="profile-picture"
             />

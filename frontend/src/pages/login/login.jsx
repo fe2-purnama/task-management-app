@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Card, Button, Form } from "react-bootstrap";
 import { FaArrowLeft } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
@@ -7,33 +7,45 @@ import NoticLogo from "../../assets/letter-n.png";
 import { AuthContext } from "../../context/AuthContext";
 
 const Login = () => {
-  const [usernameOrEmail, setUsernameOrEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
+  const [pass, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const { login } = useContext(AuthContext);
+  const { user, login } = useContext(AuthContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:5000/login", {
+      const response = await fetch("http://localhost:3004/login/auth", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ usernameOrEmail, password }),
+        body: JSON.stringify({ username, pass }),
       });
 
       const data = await response.json();
       console.log("Response dari server:", data);
 
       if (response.ok) {
-        const { token, role, ...user } = data; // Asumsikan response berisi field 'role'
+        const { token, role, ...user } = data;
+        console.log("Role dari server:", role); // Tambahkan log untuk debug
         localStorage.setItem("token", token);
+        localStorage.setItem("role", role);
         login(user);
         console.log("Login berhasil, mengarahkan ke dashboard...");
 
+        const profileResponse = await fetch("http://localhost:3004/profile", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const profileData = await profileResponse.json();
+        console.log("Profil pengguna:", profileData);
+        localStorage.setItem("profile", JSON.stringify(profileData));
         // Redirect berdasarkan peran pengguna
         if (role === "admin") {
           navigate("/dashboardadmin");
@@ -47,6 +59,18 @@ const Login = () => {
       setError("Failed to login. Please try again later.");
     }
   };
+
+  useEffect(() => {
+    if (user) {
+      const role = localStorage.getItem("role");
+      console.log("Role pengguna setelah login:", role); // Tambahkan log untuk debug
+      if (role === "admin") {
+        navigate("/dashboardadmin");
+      } else {
+        navigate("/dashboarduser");
+      }
+    }
+  }, [user, navigate]);
 
   return (
     <div className="login-page">
@@ -77,8 +101,8 @@ const Login = () => {
                 <Form.Control
                   type="text"
                   placeholder="Enter username or email"
-                  value={usernameOrEmail}
-                  onChange={(e) => setUsernameOrEmail(e.target.value)}
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   required
                 />
               </Form.Group>
@@ -88,7 +112,7 @@ const Login = () => {
                 <Form.Control
                   type="password"
                   placeholder="Enter password"
-                  value={password}
+                  value={pass}
                   onChange={(e) => setPassword(e.target.value)}
                   required
                 />
@@ -104,7 +128,10 @@ const Login = () => {
             </Form>
 
             <div className="text-left mb-3">
-              <a href="/forgot-password" className="text-decoration-none text-social">
+              <a
+                href="/forgot-password"
+                className="text-decoration-none text-social"
+              >
                 Forgot Password?
               </a>
             </div>
