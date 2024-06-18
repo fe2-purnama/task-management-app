@@ -1,12 +1,16 @@
 const express = require("express");
 const router = express.Router();
 const userController = require("../controller/userController");
+const { verifyToken, isLogin, adminAuthMiddleware } = require("../library/verify");
 
-router.get("/", userController.getAllUsers);
-router.get("/:id", userController.getUserById);
-router.post("/", userController.createUser);
-router.put("/:id", userController.updateUser);
-router.delete("/:id", userController.deleteUser);
-router.get("/dashboard/stats", userController.getDashboardStats); // Route baru untuk dashboard stats
+// Semua rute terkait task harus menggunakan middleware verifikasi token
+router.use(verifyToken);
+
+router.get("/", isLogin, adminAuthMiddleware, userController.getAllUsers);
+router.get("/:id", isLogin, adminAuthMiddleware, userController.getUserById);
+router.post("/", isLogin, adminAuthMiddleware, userController.createUser);
+router.put("/:id", isLogin, adminAuthMiddleware, userController.updateUser);
+router.delete("/:id", isLogin, adminAuthMiddleware, userController.deleteUser);
+router.get("/dashboard/stats", isLogin, adminAuthMiddleware, userController.getDashboardStats); // Route baru untuk dashboard stats
 
 module.exports = router;

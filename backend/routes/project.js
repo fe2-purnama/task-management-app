@@ -1,12 +1,15 @@
 const express = require("express");
 const router = express.Router();
 const projectController = require("../controller/projectController");
-const verifyUser = require("../library/verify");
+const { verifyToken, isLogin } = require("../library/verify");
 
-router.get("/", verifyUser.verifyToken, projectController.getAllProjects);
-router.get("/:id", verifyUser.verifyToken, projectController.getProjectById);
-router.post("/", verifyUser.verifyToken, projectController.createProject);
-router.put("/:id", verifyUser.verifyToken, projectController.updateProject);
-router.delete("/:id", verifyUser.verifyToken, projectController.deleteProject);
+// Middleware verifikasi token harus diterapkan sebelum memanggil controller
+router.use(verifyToken);
+
+router.get("/", isLogin, projectController.getAllProjects);
+router.get("/:id", isLogin, projectController.getProjectById);
+router.post("/", isLogin, projectController.createProject);
+router.put("/:id", isLogin, projectController.updateProject);
+router.delete("/:id", isLogin, projectController.deleteProject);
 
 module.exports = router;
