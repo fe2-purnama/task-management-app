@@ -73,6 +73,17 @@ const Task = {
       }
     );
   },
+  updateStatus: (id, status, callback) => {
+    const query = "UPDATE task SET status = ? WHERE id_task = ?";
+    db.query(query, [status, id], (err, results) => {
+      if (err) {
+        console.error("Error updating task status:", err);
+        return callback(err);
+      }
+      console.log(`Task with id ${id} updated to status: ${status}`);
+      callback(null, results);
+    });
+  },
   delete: (id, callback) => {
     const query = "DELETE FROM task WHERE id_task = ?";
     db.query(query, [id], (err, results) => {

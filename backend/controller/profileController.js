@@ -1,6 +1,7 @@
 const connection = require("../library/database");
 const cloudinary = require("../library/cloudinary");
 const fs = require('fs');
+const crypto = require('crypto');
 
 // Fungsi untuk menampilkan profil
 const profile = (req, res) => {
@@ -69,9 +70,9 @@ const updatePassword = async (req, res) => {
     return res.status(401).send("Unauthorized");
   }
 
-  const { password, confirmPassword } = req.body;
-  if (!password || !confirmPassword) {
-    return res.status(400).send("Password and confirm password are required");
+  const { currentPassword, password, confirmPassword } = req.body;
+  if (!currentPassword || !password || !confirmPassword) {
+    return res.status(400).send("Current password, new password and confirm password are required");
   }
 
   if (password !== confirmPassword) {
@@ -79,24 +80,49 @@ const updatePassword = async (req, res) => {
   }
 
   try {
+    // Verifikasi currentPassword
     connection.query(
-      "UPDATE user SET password = SHA2(?, 512) WHERE id_user = ?",
-      [password, id_user],
+      "SELECT password FROM user WHERE id_user = ?",
+      [id_user],
       (error, results) => {
         if (error) {
-          console.error("Error updating password:", error);
+          console.error("Error fetching current password:", error);
           return res.status(500).send("Internal Server Error");
         }
 
-        if (results.affectedRows === 0) {
+        if (!results.length) {
           return res.status(404).send("User not found");
         }
 
-        res.send("Password updated successfully");
+        const currentHashedPassword = results[0].password;
+        const currentPasswordHashed = crypto.createHash('sha512').update(currentPassword).digest('hex');
+
+        if (currentPasswordHashed !== currentHashedPassword) {
+          return res.status(400).send("Current password is incorrect");
+        }
+
+        const newHashedPassword = crypto.createHash('sha512').update(password).digest('hex');
+
+        connection.query(
+          "UPDATE user SET password = ? WHERE id_user = ?",
+          [newHashedPassword, id_user],
+          (error, results) => {
+            if (error) {
+              console.error("Error updating password:", error);
+              return res.status(500).send("Internal Server Error");
+            }
+
+            if (results.affectedRows === 0) {
+              return res.status(404).send("User not found");
+            }
+
+            res.send("Password updated successfully");
+          }
+        );
       }
     );
   } catch (error) {
-    console.error("Error hashing password:", error);
+    console.error("Error processing password update:", error);
     res.status(500).send("Internal Server Error");
   }
 };
