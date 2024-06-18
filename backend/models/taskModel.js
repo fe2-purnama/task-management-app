@@ -2,7 +2,6 @@ const db = require("../library/database");
 
 const Task = {
   create: (data, callback) => {
-    const dateOnly = new Date(data.date).toISOString().split('T')[0];
     const query =
       "INSERT INTO task (id_project, name, deskripsi, tag, status, date, priority) VALUES (?, ?, ?, ?, ?, ?, ?)";
     db.query(
@@ -13,7 +12,7 @@ const Task = {
         data.deskripsi,
         data.tag,
         data.status,
-        dateOnly,
+        data.date,
         data.priority,
       ],
       (err, results) => {
@@ -50,7 +49,6 @@ const Task = {
     });
   },
   update: (id, data, callback) => {
-    const dateOnly = new Date(data.date).toISOString().split('T')[0];
     const query =
       "UPDATE task SET id_project = ?, name = ?, deskripsi = ?, tag = ?, status = ?, date = ?, priority = ? WHERE id_task = ?";
     db.query(
@@ -61,7 +59,7 @@ const Task = {
         data.deskripsi,
         data.tag,
         data.status,
-        dateOnly,
+        data.date,
         data.priority,
         id,
       ],
