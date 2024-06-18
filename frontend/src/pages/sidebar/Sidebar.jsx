@@ -83,7 +83,7 @@ const Sidebar = ({ user }) => {
           <div className="logo-container">
             <img src={logo} alt="Logo" className="logo" />
             <a
-              href="/"
+              
               className="text-decoration-none"
               style={{ color: darkMode ? "white" : "black" }}
             >
