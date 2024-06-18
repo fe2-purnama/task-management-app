@@ -48,20 +48,16 @@ const loginAuth = async (req, res) => {
           token,
         });
       } else {
-        req.flash("color", "danger");
-        req.flash("status", "Oops..");
-        req.flash("message", "Akun tidak ditemukan");
-        res.redirect("/login");
+        res.status(401).json({ message: "Akun tidak ditemukan" });
       }
     } catch (error) {
       console.error("Error during login authentication:", error);
-      res.status(500).send("Internal server error");
+      res.status(500).json({ message: "Internal server error" });
     }
   } else {
-    req.flash("color", "warning");
-    req.flash("status", "Warning");
-    req.flash("message", "Please enter a valid email/username and password");
-    res.redirect("/login");
+    res
+      .status(400)
+      .json({ message: "Please enter a valid email/username and password" });
   }
 };
 
