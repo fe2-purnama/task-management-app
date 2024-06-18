@@ -13,7 +13,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import "./project.css";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 const Project = ({ updateSidebarProjectName }) => {
   const [completedTasks, setCompletedTasks] = useState([]);
@@ -26,6 +26,8 @@ const Project = ({ updateSidebarProjectName }) => {
   const [modalMode, setModalMode] = useState("add");
   const [showProjectNameModal, setShowProjectNameModal] = useState(false);
   const [showDeleteProjectModal, setShowDeleteProjectModal] = useState(false);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCompletedTasks = async () => {
@@ -102,11 +104,12 @@ const Project = ({ updateSidebarProjectName }) => {
       await axios.delete(`http://localhost:3004/projects/${id_project}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      // Redirect or update the UI after project deletion
+      setShowDeleteProjectModal(false);
+      navigate('/dashboarduser');
+      window.location.reload();
     } catch (error) {
       console.error("Error deleting project:", error);
     }
-    setShowDeleteProjectModal(false);
   };
 
   const handleCheckboxChange = (id, checked) => {

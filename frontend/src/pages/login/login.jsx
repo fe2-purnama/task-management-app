@@ -157,17 +157,6 @@ const Login = () => {
                 Sign in with Google
               </Button>
             </div>
-
-            <div className="d-flex justify-content-center">
-              <Button className="btn-login-social w-50">
-                <img
-                  src="../../public/discord.svg"
-                  alt="Discord"
-                  className="me-2"
-                />{" "}
-                Sign in with Discord
-              </Button>
-            </div>
           </Card.Body>
         </Card>
       </div>
