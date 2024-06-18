@@ -47,7 +47,7 @@ const Project = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          `http://localhost:3004/projects/${id_project}/tasks`,
+          `http://localhost:3004/${id_project}/tasks`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setTasks(response.data);
@@ -70,10 +70,9 @@ const Project = () => {
   const handleDelete = async (id) => {
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(
-        `http://localhost:3004/projects/${id_project}/tasks/${id}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await axios.delete(`http://localhost:3004/${id_project}/tasks/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       setTasks(tasks.filter((task) => task.id_task !== id));
     } catch (error) {
       console.error("Error deleting task:", error);
@@ -93,25 +92,32 @@ const Project = () => {
     try {
       const token = localStorage.getItem("token");
 
+      // Validate and set defaults if necessary
       if (!modalTask.name.trim()) {
         alert("Task name cannot be empty");
         return;
       }
-      if (!modalTask.description.trim()) {
+      if (!modalTask.deskripsi.trim()) {
         alert("Task description cannot be empty");
         return;
+      }
+      if (!modalTask.tag) {
+        modalTask.tag = ""; // Set default tag if not provided
+      }
+      if (!modalTask.date) {
+        modalTask.date = new Date().toISOString().split("T")[0]; // Set default date if not provided
       }
 
       if (modalMode === "add") {
         const response = await axios.post(
-          `http://localhost:3004/projects/${id_project}/tasks`,
+          `http://localhost:3004/${id_project}/tasks`,
           modalTask,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setTasks([...tasks, response.data]);
       } else if (modalMode === "edit") {
         await axios.put(
-          `http://localhost:3004/projects/${id_project}/tasks/${modalTask.id_task}`,
+          `http://localhost:3004/${id_project}/tasks/${modalTask.id_task}`,
           modalTask,
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -180,10 +186,10 @@ const Project = () => {
                   setModalTask({
                     id_project: id_project,
                     name: "",
-                    description: "",
-                    tags: [],
+                    deskripsi: "",
+                    tag: "",
                     status: "Not Started",
-                    dueDate: "",
+                    date: "",
                     priority: "LOW",
                   });
                 }}
@@ -222,11 +228,11 @@ const Project = () => {
                   <Form.Control
                     as="textarea"
                     rows={3}
-                    value={modalTask?.description || ""}
+                    value={modalTask?.deskripsi || ""}
                     onChange={(e) =>
                       setModalTask({
                         ...modalTask,
-                        description: e.target.value,
+                        deskripsi: e.target.value,
                       })
                     }
                   />
@@ -235,13 +241,11 @@ const Project = () => {
                   <Form.Label>Task Tags</Form.Label>
                   <Form.Control
                     type="text"
-                    value={modalTask?.tags ? modalTask.tags.join(", ") : ""}
+                    value={modalTask?.tag || ""}
                     onChange={(e) =>
                       setModalTask({
                         ...modalTask,
-                        tags: e.target.value
-                          .split(",")
-                          .map((tag) => tag.trim()),
+                        tag: e.target.value,
                       })
                     }
                   />
@@ -250,9 +254,9 @@ const Project = () => {
                   <Form.Label>Due Date</Form.Label>
                   <Form.Control
                     type="date"
-                    value={modalTask?.dueDate || ""}
+                    value={modalTask?.date || ""}
                     onChange={(e) =>
-                      setModalTask({ ...modalTask, dueDate: e.target.value })
+                      setModalTask({ ...modalTask, date: e.target.value })
                     }
                   />
                 </Form.Group>
@@ -268,6 +272,21 @@ const Project = () => {
                     <option value="LOW">Low</option>
                     <option value="MEDIUM">Medium</option>
                     <option value="HIGH">High</option>
+                  </Form.Control>
+                </Form.Group>
+                <Form.Group className="mb-3">
+                  <Form.Label>Status</Form.Label>
+                  <Form.Control
+                    as="select"
+                    value={modalTask?.status || "Not Started"}
+                    onChange={(e) =>
+                      setModalTask({ ...modalTask, status: e.target.value })
+                    }
+                  >
+                    <option value="not started">Not Started</option>
+                    <option value="on process">On Process</option>
+                    <option value="complete">Complete</option>
+                    <option value="finished">Finished</option>
                   </Form.Control>
                 </Form.Group>
               </Form>
@@ -292,7 +311,7 @@ const Project = () => {
               <Modal.Title>Task Description</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              <p>{modalTask?.description}</p>
+              <p>{modalTask?.deskripsi}</p>
             </Modal.Body>
           </Modal>
         </div>
@@ -300,6 +319,7 @@ const Project = () => {
     </div>
   );
 };
+
 const TaskTable = ({
   tasks,
   handleEdit,
@@ -333,7 +353,7 @@ const TaskTable = ({
               />
             </td>
             <td>{task.name}</td>
-            <td>{task.description}</td>
+            <td>{task.deskripsi}</td>
             <td>{task.priority}</td>
             <td>{task.date}</td>
             <td>{task.status}</td>
@@ -356,4 +376,3 @@ const TaskTable = ({
 };
 
 export default Project;
-
