@@ -53,7 +53,7 @@ const sendEmailReminders = (tasks) => {
 };
 
 // Schedule a cron job to run every day at midnight
-cron.schedule("*/5 * * * * *", () => {
+cron.schedule("*/2 * * * *", () => {
   console.log("Running cron job every second...");
 
   // Query to find tasks with deadlines within the next 24 hours
