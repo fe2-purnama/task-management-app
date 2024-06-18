@@ -20,12 +20,7 @@ module.exports = {
       next();
     });
   },
-  adminAuthMiddleware(req, res, next) {
-    if (req.user.role !== 'admin') {
-      return res.status(401).send('Akses ditolak');
-    }
-    next();
-  },
+
   isLogin(req, res, next) {
     if (req.session.token) {
       jwt.verify(req.session.token, JWT_SECRET, (err, decoded) => {
