@@ -138,7 +138,7 @@ const DashboardAdmin = () => {
               <Card className="card-hover">
                 <Card.Body className="card-body-custom">
                   <img
-                    src="public/users.png"
+                    src="/users.png"
                     alt="total-users"
                     className="card-img"
                   />
@@ -156,7 +156,7 @@ const DashboardAdmin = () => {
               <Card className="card-hover">
                 <Card.Body className="card-body-custom">
                   <img
-                    src="public/key.svg"
+                    src="/key.svg"
                     alt="registration"
                     className="card-img"
                   />
@@ -174,7 +174,7 @@ const DashboardAdmin = () => {
             </Col>
           </Row>
           <Row className="mb-3">
-            <Col md={12}>
+            <Col md={8}>
               <Card className="card-hover card-grafik">
                 <Card.Body className="card-body-radius">
                   <Card.Title className="fw-bold">Total Users</Card.Title>

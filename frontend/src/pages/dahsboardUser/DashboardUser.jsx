@@ -52,7 +52,7 @@ const DashboardUser = () => {
             <Col>
               <Card className="card-hover">
                 <Card.Body className="card-body-custom">
-                  <img src="public/Document.svg" alt="task" className="card-img" />
+                  <img src="/Document.svg" alt="task" className="card-img" />
                   <div className="card-content">
                     <Card.Title className="fw-bold">Tasks</Card.Title>
                     <Card.Text className="card-text-custom">
@@ -66,7 +66,7 @@ const DashboardUser = () => {
             <Col>
               <Card className="card-hover">
                 <Card.Body className="card-body-custom">
-                  <img src="public/Hotspot.svg" alt="current-project" className="card-img" />
+                  <img src="/Hotspot.svg" alt="current-project" className="card-img" />
                   <div className="card-content">
                     <Card.Title className="fw-bold">Current Project</Card.Title>
                     <Card.Text className="card-text-custom">

@@ -32,7 +32,7 @@ function ForgotPassword() {
     return (
         <Container fluid className="forgot-container">
             <div className="wave-background">
-                <img src="public/wavebwh.png" alt="waves" />
+                <img src="/wavebwh.png" alt="waves" />
             </div>
             <div className="logo-container-fpw">
                 <img
@@ -46,7 +46,7 @@ function ForgotPassword() {
             </div>
             <div className="forgot-content">
                 <div className="forgot-image">
-                    <img src="public/fpw.svg" alt="Forgot Password" />
+                    <img src="/fpw.svg" alt="Forgot Password" />
                 </div>
                 <div className="forgot-form">
                     <h2 className='text-center'>Forgot Your Password?</h2>

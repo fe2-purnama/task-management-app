@@ -65,7 +65,7 @@ const Register = () => {
     <div className="register-page">
       <div className="wave-container-atas mb-5">
         <img
-          src="../../public/waveatas.png"
+          src="/waveatas.png"
           alt="Wave"
           className="wave-image-atas mb-5"
         />
@@ -153,22 +153,11 @@ const Register = () => {
             <div className="d-flex justify-content-center mb-2">
               <Button className="btn-register-social w-50 mb-2">
                 <img
-                  src="../../public/google.svg"
+                  src="/google.svg"
                   alt="Google"
                   className="me-2"
                 />{" "}
                 Sign Up with Google
-              </Button>
-            </div>
-
-            <div className="d-flex justify-content-center">
-              <Button className="btn-register-social w-50">
-                <img
-                  src="../../public/discord.svg"
-                  alt="Discord"
-                  className="me-2"
-                />{" "}
-                Sign Up with Discord
               </Button>
             </div>
           </Card.Body>

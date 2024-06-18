@@ -116,24 +116,52 @@ color: #000000 !important; /* Ganti dengan warna yang Anda inginkan */
 }
 
 .content{
-flex:1
+  flex:1
 }
 
 .footer {
-  background-color: #2c3e50;
-  color: #fff;
-  padding: 20px 0;
+  background-color: #1c1c1c;
+  color: #c7c7c7;
+}
+
+.footer .container {
+  max-width: 1170px;
+  margin: auto;
+}
+
+.footer .footer-top {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.footer .footer-logo-container {
+  text-align: left;
+}
+
+.footer .footer-logo-container h3 {
+  margin: 10px 0 5px 0;
+  color: #ffffff;
+}
+
+.footer .footer-logo-container p {
+  margin: 5px 0 0 0;
+  color: #c7c7c7;
+}
+
+.footer .footer-logo {
+  max-width: 100px;
+  margin-bottom: 10px;
 }
 
 .footer h5 {
-  font-size: 16px;
-  color: #fff;
+  color: #ffffff;
   margin-bottom: 20px;
 }
 
 .footer ul {
-  list-style: none;
   padding: 0;
+  list-style: none;
 }
 
 .footer ul li {
@@ -141,23 +169,33 @@ flex:1
 }
 
 .footer ul li a {
-  color: #bdc3c7;
+  color: #c7c7c7;
   text-decoration: none;
 }
 
 .footer ul li a:hover {
-  color: #fff;
-  text-decoration: underline;
+  color: #ffffff;
 }
 
-.footer-bottom {
-  border-top: 1px solid #bdc3c7;
-  padding-top: 10px;
-  margin-top: 20px;
+.footer .social-icons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.footer .social-icons a {
+  color: #c7c7c7;
+  font-size: 20px;
+  transition: color 0.3s;
+}
+
+.footer .social-icons a:hover {
+  color: #ffffff;
 }
 
 .footer-bottom p {
   margin: 0;
+  color: #c7c7c7;
 }
 
 .container-head {
