@@ -20,6 +20,7 @@ module.exports = {
       next();
     });
   },
+
   isLogin(req, res, next) {
     if (req.session.token) {
       jwt.verify(req.session.token, JWT_SECRET, (err, decoded) => {

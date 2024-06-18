@@ -90,11 +90,22 @@ body.dark-mode .form-control {
 }
 
 .profile-pic {
-  width: 100px;
-  height: 100px;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
-  border: 2px solid var(--primary-color);
   padding: 5px;
+  object-fit: cover;
+  transition: transform 0.3s ease-in-out;
+  border: 2px solid var(--primary-color); /* Border untuk tema light mode */
+}
+
+.profile-pic:hover {
+  transform: scale(1.1);
+}
+
+/* Penyesuaian untuk Dark Mode */
+body.dark-mode .profile-pic {
+  border-color: transparent; /* Mengubah border color menjadi transparan */
 }
 
 .btn-secondary, .btn-danger, .btn-primary {
@@ -111,7 +122,8 @@ body.dark-mode .form-control {
 }
 
 /* Common Styles */
-body.light-mode, body.dark-mode {
+body.light-mode,
+body.dark-mode {
   --background-color: #ffffff;
   --text-color: #000000;
   --card-background: #f8f9fa;
@@ -133,33 +145,25 @@ body.dark-mode {
   --primary-color: #5cadd1;
 }
 
-/* Responsiveness */
+.card-title {
+  font-weight: bold;
+}
+
+.card-body-setting {
+  text-align: left;
+  padding: 2rem;
+  border-radius: 10px;
+  background: var(--card-background);
+  transition: background 0.3s ease-in-out;
+}
+
 @media (max-width: 576px) {
   .card-body-setting {
     padding: 1rem;
   }
 
-  .profile-pic {
-    width: 80px;
-    height: 80px;
-  }
-
   .card-setting {
     margin-bottom: 1.5rem;
-  }
-
-  .btn-secondary, .btn-danger, .btn-primary {
-    width: 100%;
-  }
-
-  .d-flex {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .d-flex .me-3 {
-    margin-right: 0;
-    margin-bottom: 1rem;
   }
 
   .theme-switcher {
@@ -174,4 +178,39 @@ body.dark-mode {
   .theme-switcher .form-check {
     align-self: flex-end;
   }
+
+  .profile-pic {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+.theme-button {
+  background: transparent; /* Jadikan latar belakang transparan */
+  border: none; /* Hapus border */
+  color: var(--primary-color); /* Warna ikon berdasarkan tema utama */
+  transition: transform 0.3s ease-in-out; /* Animasi transformasi */
+  display: inline-block; /* Pastikan tombol memiliki ukuran yang cukup */
+  font-size: 1.5rem; /* Ukuran font ikon */
+  padding: 0.5rem; /* Padding tambahan untuk tombol */
+  border-radius: 50%; /* Agar bentuknya lingkaran */
+  line-height: 1; /* Hindari jarak ekstra */
+  cursor: pointer; /* Ganti kursor saat dihover */
+  margin-right: 0.5rem; /* Margin antara tombol dan teks */
+}
+
+.theme-button:hover {
+  transform: rotate(180deg) scale(1.2); /* Putar 180 derajat saat dihover dengan sedikit scaling */
+}
+
+/* Styles for Light Mode */
+body.light-mode .theme-button {
+  color: var(--primary-color-light); /* Warna ikon untuk mode terang */
+  background: transparent;
+}
+
+/* Styles for Dark Mode */
+body.dark-mode .theme-button {
+  color: var(--primary-color-dark); /* Warna ikon untuk mode gelap */
+  background: transparent;
 }

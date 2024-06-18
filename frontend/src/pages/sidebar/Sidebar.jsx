@@ -12,7 +12,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import "./sidebar.css";
 import logo from "../../assets/letter-n.png";
 import { ThemeContext } from "../../context/ThemeContext";
-import { Collapse, Modal, Button, Form } from "react-bootstrap";
+import { Collapse, Modal, Button, Form, OverlayTrigger, Tooltip } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -83,7 +83,7 @@ const Sidebar = ({ user }) => {
           <div className="logo-container">
             <img src={logo} alt="Logo" className="logo" />
             <a
-              href="/"
+              
               className="text-decoration-none"
               style={{ color: darkMode ? "white" : "black" }}
             >
@@ -98,7 +98,16 @@ const Sidebar = ({ user }) => {
             />
             <div className="profile-details">
               <p className="username">{user && user.username}</p>
-              <p className="email">{user && user.email}</p>
+              <OverlayTrigger
+                placement="bottom"
+                overlay={<Tooltip id="tooltip-email">{user && user.email}</Tooltip>}
+              >
+                <p className="email">
+                  {user && (user.email.length > 15
+                    ? user.email.substring(0, 15) + "..."
+                    : user.email)}
+                </p>
+              </OverlayTrigger>
             </div>
           </div>
         </CDBSidebarHeader>

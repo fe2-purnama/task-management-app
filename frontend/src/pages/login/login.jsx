@@ -30,7 +30,7 @@ const Login = () => {
 
       if (response.ok) {
         const { token, role, ...user } = data;
-        console.log("Role dari server:", role); // Tambahkan log untuk debug
+        console.log("Role dari server:", role);
         localStorage.setItem("token", token);
         localStorage.setItem("role", role);
         login(user);
@@ -53,17 +53,17 @@ const Login = () => {
           navigate("/dashboarduser");
         }
       } else {
-        setError(data.message);
+        setError(data.message || "Email atau password salah");
       }
     } catch (error) {
-      setError("Failed to login. Please try again later.");
+      setError("Gagal login. Silakan coba lagi nanti.");
     }
   };
 
   useEffect(() => {
     if (user) {
       const role = localStorage.getItem("role");
-      console.log("Role pengguna setelah login:", role); // Tambahkan log untuk debug
+      console.log("Role pengguna setelah login:", role);
       if (role === "admin") {
         navigate("/dashboardadmin");
       } else {
@@ -150,18 +150,29 @@ const Login = () => {
             <div className="d-flex justify-content-center mb-2">
               <Button className="btn-login-social w-50 mb-2">
                 <img
-                  src="/google.svg"
+                  src="../../public/google.svg"
                   alt="Google"
                   className="me-2"
                 />{" "}
                 Sign in with Google
               </Button>
             </div>
+
+            <div className="d-flex justify-content-center">
+              <Button className="btn-login-social w-50">
+                <img
+                  src="../../public/discord.svg"
+                  alt="Discord"
+                  className="me-2"
+                />{" "}
+                Sign in with Discord
+              </Button>
+            </div>
           </Card.Body>
         </Card>
       </div>
       <div className="wave-container">
-        <img src="/wavebwh.png" alt="Wave" className="wave-image" />
+        <img src="../../public/wavebwh.png" alt="Wave" className="wave-image" />
       </div>
     </div>
   );

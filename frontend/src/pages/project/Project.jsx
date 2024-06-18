@@ -175,7 +175,7 @@ const Project = () => {
   return (
     <div className="container-fluid mt-5">
       <div className="row">
-        <div className="col-md-10">
+        <div className="col-md-12">
           <h2>Project: {projectName}</h2>
           <div className="d-flex justify-content-between mb-3">
             <input

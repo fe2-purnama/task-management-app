@@ -85,7 +85,7 @@ const ProtectedRoute = ({ component: Component }) => {
       <Component user={user} />
     </div>
   ) : (
-    <Navigate to="/" />
+    <Navigate to="/login" />
   );
 };
 
@@ -97,7 +97,7 @@ const ProtectedRouteAdmin = ({ component: Component }) => {
       <Component user={user} />
     </div>
   ) : (
-    <Navigate to="/" />
+    <Navigate to="/login" />
   );
 };
 
