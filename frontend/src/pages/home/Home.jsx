@@ -66,7 +66,7 @@ const Home = () => {
           </Col>
           <Col md={4} className="mt-4">
             <img
-              src={boost} // Ganti dengan path gambar yang sesuai
+              src={boost}
               alt="Notic Illustration"
               className="img-fluid topic-icon"
             />
@@ -80,7 +80,7 @@ const Home = () => {
           </Col>
           <Col md={4} className="mt-4">
             <img
-              src={access} // Ganti dengan path gambar yang sesuai
+              src={access}
               alt="Notic Illustration"
               className="img-fluid topic-icon"
             />
@@ -94,11 +94,6 @@ const Home = () => {
           </Col>
         </Row>
       </Container>
-      <img
-        src={wavedown} // Ganti dengan path gambar yang sesuai
-        alt="Notic Illustration"
-        className="img-fluid mb-5"
-      />
     </Container>
   );
 };

@@ -150,29 +150,18 @@ const Login = () => {
             <div className="d-flex justify-content-center mb-2">
               <Button className="btn-login-social w-50 mb-2">
                 <img
-                  src="../../public/google.svg"
+                  src="/google.svg"
                   alt="Google"
                   className="me-2"
                 />{" "}
                 Sign in with Google
               </Button>
             </div>
-
-            <div className="d-flex justify-content-center">
-              <Button className="btn-login-social w-50">
-                <img
-                  src="../../public/discord.svg"
-                  alt="Discord"
-                  className="me-2"
-                />{" "}
-                Sign in with Discord
-              </Button>
-            </div>
           </Card.Body>
         </Card>
       </div>
       <div className="wave-container">
-        <img src="../../public/wavebwh.png" alt="Wave" className="wave-image" />
+        <img src="/wavebwh.png" alt="Wave" className="wave-image" />
       </div>
     </div>
   );
