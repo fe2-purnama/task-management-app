@@ -13,7 +13,7 @@ const Task = {
         data.deskripsi,
         data.tag,
         data.status,
-        data.dateOnly,
+        dateOnly,
         data.priority,
       ],
       (err, results) => {
@@ -61,7 +61,7 @@ const Task = {
         data.deskripsi,
         data.tag,
         data.status,
-        data.dateOnly,
+        dateOnly,
         data.priority,
         id,
       ],
