@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useState } from "react";
-import { AuthContext } from "../../context/AuthContext"; // Sesuaikan path jika diperlukan
+import { AuthContext } from "../../context/AuthContext"; // Adjust the path if necessary
 import { Container, Row, Col, Card } from "react-bootstrap";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Line, Pie } from "react-chartjs-2";
+import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -13,7 +13,6 @@ import {
   Title,
   Tooltip,
   Legend,
-  ArcElement,
 } from "chart.js";
 import "chart.js/auto";
 import "./dashboardAdmin.css";
@@ -25,17 +24,17 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend,
-  ArcElement
+  Legend
 );
 
 const DashboardAdmin = () => {
-  const { user } = useContext(AuthContext); // Dapatkan data pengguna dari AuthContext
+  const { user } = useContext(AuthContext); // Get user data from AuthContext
   const [dashboardStats, setDashboardStats] = useState({
     totalUsers: 0,
     newRegistrations: 0,
     usersPerDay: [],
   });
+  const [error, setError] = useState("");
   const isDarkMode = !user; // Assume dark mode when user is not defined
 
   const textColor = isDarkMode ? "#fff" : "#000"; // Set text color based on mode
@@ -48,13 +47,15 @@ const DashboardAdmin = () => {
           "http://localhost:3004/users/dashboard/stats",
           {
             headers: {
-              Authorization: `Bearer ${token}`, // Pastikan token dikirim dengan format Bearer
+              Authorization: `Bearer ${token}`, // Ensure token is sent with Bearer format
             },
           }
         );
+        console.log("Fetched data:", response.data); // Debug log
         setDashboardStats(response.data);
       } catch (error) {
         console.error("Failed to fetch dashboard stats:", error);
+        setError("Failed to fetch dashboard stats. Please try again later.");
       }
     };
 
@@ -64,11 +65,11 @@ const DashboardAdmin = () => {
   const { totalUsers, newRegistrations, usersPerDay } = dashboardStats;
 
   const lineData = {
-    labels: usersPerDay.map((data) => data.date),
+    labels: usersPerDay && usersPerDay.length > 0 ? usersPerDay.map((data) => data.date) : [],
     datasets: [
       {
         label: "Total Users",
-        data: usersPerDay.map((data) => data.count),
+        data: usersPerDay && usersPerDay.length > 0 ? usersPerDay.map((data) => data.count) : [],
         fill: true,
         backgroundColor: "rgba(108, 99, 255, 0.2)",
         borderColor: "#6c63ff",
@@ -89,32 +90,19 @@ const DashboardAdmin = () => {
       title: {
         display: true,
         text: "Total Users Over Time",
+        color: textColor,
       },
     },
-  };
-
-  const pieData = {
-    labels: ["Active", "Deleted", "Pending"],
-    datasets: [
-      {
-        label: "Users",
-        data: [356, 144, 50], // These are static values, you might want to fetch this data as well
-        backgroundColor: ["#6c63ff", "#ff6384", "#ffcd56"],
-        hoverOffset: 3,
-        borderColor: "rgba(0, 0, 0, 0)", // No border color
+    scales: {
+      x: {
+        ticks: {
+          color: textColor,
+        },
       },
-    ],
-  };
-
-  const pieOptions = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: "right",
-      },
-      title: {
-        display: true,
-        text: "User Status",
+      y: {
+        ticks: {
+          color: textColor,
+        },
       },
     },
   };
@@ -122,9 +110,7 @@ const DashboardAdmin = () => {
   return (
     <Container
       fluid
-      className={`component-container p-3 ${
-        isDarkMode ? "dark-mode" : "light-mode"
-      }`}
+      className={`component-container p-3 ${isDarkMode ? "dark-mode" : "light-mode"}`}
     >
       {user ? (
         <>
@@ -174,11 +160,15 @@ const DashboardAdmin = () => {
             </Col>
           </Row>
           <Row className="mb-3">
-            <Col md={8}>
+            <Col md={10}>
               <Card className="card-hover card-grafik">
                 <Card.Body className="card-body-radius">
                   <Card.Title className="fw-bold">Total Users</Card.Title>
-                  <Line data={lineData} options={lineOptions} />
+                  {usersPerDay && usersPerDay.length > 0 ? (
+                    <Line data={lineData} options={lineOptions} />
+                  ) : (
+                    <p>No user data available for the chart.</p>
+                  )}
                 </Card.Body>
               </Card>
             </Col>
@@ -187,6 +177,7 @@ const DashboardAdmin = () => {
       ) : (
         <p>No user data found.</p>
       )}
+      {error && <p className="text-danger">{error}</p>}
     </Container>
   );
 };

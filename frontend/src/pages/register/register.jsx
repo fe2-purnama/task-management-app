@@ -5,6 +5,8 @@ import "./register.css";
 import NoticLogo from "../../assets/letter-n.png";
 import { Link } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Register = () => {
   const [username, setUsername] = useState("");
@@ -29,8 +31,19 @@ const Register = () => {
       });
 
       if (response.ok) {
-        // Redirect to login page
-        navigate("/login");
+        toast.success("Registration successful!", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        // Redirect to login page after a short delay to show the toast
+        setTimeout(() => {
+          navigate("/login");
+        }, 3000);
       } else {
         // Handle error
         const errorData = await response.json();
@@ -63,6 +76,7 @@ const Register = () => {
 
   return (
     <div className="register-page">
+      <ToastContainer />
       <div className="wave-container-atas mb-5">
         <img
           src="/waveatas.png"
