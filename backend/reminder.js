@@ -1,4 +1,5 @@
 require("dotenv").config();
+
 const cron = require("node-cron");
 const connection = require("./library/database");
 const nodemailer = require("nodemailer");
@@ -10,10 +11,15 @@ const transporter = nodemailer.createTransport({
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
+  tls: {
+    rejectUnauthorized: false,
+  },
+  secure: false,
 });
 
+console.log("Transporter created:", transporter);
+
 // Function to send email reminder
-// butuh koreksi
 const sendEmailReminder = (task) => {
   const mailOptions = {
     from: process.env.EMAIL_USER,
@@ -22,21 +28,24 @@ const sendEmailReminder = (task) => {
     text: `Hello, your task "${task.nama}" is near its deadline on ${task.date}. Please complete it soon.`,
   };
 
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      console.log("Error sending email: ", error);
-    } else {
-      console.log("Email sent: " + info.response);
-    }
-  });
+  try {
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log("Error sending email:", error);
+      } else {
+        console.log("Email sent:", info.response);
+      }
+    });
+  } catch (error) {
+    console.error("Error sending email:", error);
+  }
 };
 
 // Schedule a cron job to run every day at midnight
-cron.schedule("0 0 * * *", () => {
-  console.log("Running cron job to check for upcoming deadlines...");
+cron.schedule("*/10 * * * * *", () => {
+  console.log("Running cron job every second...");
 
   // Query to find tasks with deadlines within the next 24 hours
-  //   butuh koreksi
   const query = `
     SELECT t.*, u.email as user_email
     FROM task t
@@ -47,7 +56,7 @@ cron.schedule("0 0 * * *", () => {
 
   connection.query(query, (err, results) => {
     if (err) {
-      console.error("Error querying database: ", err);
+      console.error("Error querying database:", err);
       return;
     }
 
