@@ -16,9 +16,9 @@ import {
 import "./project.css";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-import Sidebar from "../sidebar/Sidebar";
 
 const Project = () => {
+  const [completedTasks, setCompletedTasks] = useState([]);
   const { id_project } = useParams();
   const [projectName, setProjectName] = useState("");
   const [tasks, setTasks] = useState([]);
@@ -26,6 +26,22 @@ const Project = () => {
   const [showDescriptionModal, setShowDescriptionModal] = useState(false);
   const [modalTask, setModalTask] = useState(null);
   const [modalMode, setModalMode] = useState("add");
+useEffect(() => {
+  const fetchCompletedTasks = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get(
+        `http://localhost:3004/${id_project}/tasks?status=Finished`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setCompletedTasks(response.data);
+    } catch (error) {
+      console.error("Error fetching completed tasks:", error);
+    }
+  };
+
+  fetchCompletedTasks();
+}, [id_project]);
 
   useEffect(() => {
     const fetchProjectDetails = async () => {
@@ -47,7 +63,7 @@ const Project = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          `http://localhost:3004/projects/${id_project}/tasks`,
+          `http://localhost:3004/${id_project}/tasks`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setTasks(response.data);
@@ -81,13 +97,27 @@ const Project = () => {
   };
 
   const handleCheckboxChange = (id, checked) => {
-    const task = tasks.find((task) => task.id_task === id);
-    const updatedTask = {
-      ...task,
-      status: checked ? "Finished" : "Not Started",
-    };
-    handleEdit(updatedTask.id_task);
+    const updatedTasks = tasks.map((task) => {
+      if (task.id_task === id) {
+        return {
+          ...task,
+          status: checked ? "Finished" : "Not Started",
+        };
+      }
+      return task;
+    });
+    const taskToMove = updatedTasks.find((task) => task.id_task === id);
+    if (taskToMove) {
+      if (checked) {
+        setCompletedTasks([...completedTasks, taskToMove]);
+      } else {
+        setCompletedTasks(completedTasks.filter((task) => task.id_task !== id));
+      }
+    }
+
+    setTasks(updatedTasks);
   };
+
 
   const handleSaveTask = async () => {
     try {
@@ -97,7 +127,7 @@ const Project = () => {
         alert("Task name cannot be empty");
         return;
       }
-      if (!modalTask.description.trim()) {
+      if (!modalTask.deskripsi.trim()) {
         alert("Task description cannot be empty");
         return;
       }
@@ -127,11 +157,16 @@ const Project = () => {
     }
   };
 
-  const handleCommentClick = (id) => {
-    const task = tasks.find((task) => task.id_task === id);
-    setModalTask(task);
-    setShowDescriptionModal(true);
-  };
+const handleCommentClick = (id) => {
+  const task = tasks.find((task) => task.id_task === id);
+  setModalTask(task);
+  setShowDescriptionModal(true);
+};
+useEffect(() => {
+  const completed = tasks.filter((task) => task.status === "Finished");
+  setCompletedTasks(completed);
+}, [tasks]);
+
 
   return (
     <div className="container-fluid mt-5">
@@ -180,7 +215,7 @@ const Project = () => {
                   setModalTask({
                     id_project: id_project,
                     name: "",
-                    description: "",
+                    deskripsi: "",
                     tags: [],
                     status: "Not Started",
                     dueDate: "",
@@ -192,8 +227,20 @@ const Project = () => {
               </button>
             </div>
           </div>
+          <h5>Current Projects ({tasks.length})</h5>
           <TaskTable
-            tasks={tasks}
+            tasks={tasks.filter((task) => task.status !== "Finished")}
+            handleEdit={handleEdit}
+            handleDelete={handleDelete}
+            handleCheckboxChange={handleCheckboxChange}
+            handleCommentClick={handleCommentClick}
+          />
+          <h5 className="mt-5">
+            Completed Projects ({completedTasks.length})
+          </h5>
+          {/* Completed project table */}
+          <TaskTable
+            tasks={completedTasks}
             handleEdit={handleEdit}
             handleDelete={handleDelete}
             handleCheckboxChange={handleCheckboxChange}
@@ -222,11 +269,11 @@ const Project = () => {
                   <Form.Control
                     as="textarea"
                     rows={3}
-                    value={modalTask?.description || ""}
+                    value={modalTask?.deskripsi || ""}
                     onChange={(e) =>
                       setModalTask({
                         ...modalTask,
-                        description: e.target.value,
+                        deskripsi: e.target.value,
                       })
                     }
                   />
@@ -292,7 +339,8 @@ const Project = () => {
               <Modal.Title>Task Description</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              <p>{modalTask?.description}</p>
+              <p>{modalTask?.deskripsi}</p>{" "}
+              {/* Periksa apakah deskripsi tersedia di modalTask */}
             </Modal.Body>
           </Modal>
         </div>
@@ -300,6 +348,7 @@ const Project = () => {
     </div>
   );
 };
+
 const TaskTable = ({
   tasks,
   handleEdit,
@@ -313,7 +362,7 @@ const TaskTable = ({
         <tr>
           <th>Check</th>
           <th>Task Name</th>
-          <th>Description</th>
+          <th>Tag</th>
           <th>Priority</th>
           <th>Due Date</th>
           <th>Status</th>
@@ -332,8 +381,14 @@ const TaskTable = ({
                 }
               />
             </td>
-            <td>{task.name}</td>
-            <td>{task.description}</td>
+            <td>
+              {task.name}
+
+              <button onClick={() => handleCommentClick(task.id_task)}>
+                <FontAwesomeIcon icon={faCommenting} />
+              </button>
+            </td>
+            <td>{task.tag}</td>
             <td>{task.priority}</td>
             <td>{task.date}</td>
             <td>{task.status}</td>
@@ -344,9 +399,6 @@ const TaskTable = ({
               <button onClick={() => handleDelete(task.id_task)}>
                 <FontAwesomeIcon icon={faTrash} />
               </button>
-              <button onClick={() => handleCommentClick(task.id_task)}>
-                <FontAwesomeIcon icon={faCommenting} />
-              </button>
             </td>
           </tr>
         ))}
@@ -356,4 +408,3 @@ const TaskTable = ({
 };
 
 export default Project;
-

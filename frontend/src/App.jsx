@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
+import Header from "./pages/header/Header";
 import Home from "./pages/home/Home";
 import AboutUs from "./pages/about/About";
 import ContactUs from "./pages/contact/Contact";
@@ -25,17 +26,17 @@ function App() {
       <ThemeProvider>
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/home" element={<ProtectedRoute component={Home} />} />
+            <Route path="/" element={<HeaderWrapper />}>
+              <Route index element={<Home />} />
+              <Route path="aboutus" element={<AboutUs />} />
+              <Route path="contactus" element={<ContactUs />} />
+            </Route>
+            <Route path="login" element={<LoginWrapper />} />
+            <Route path="register" element={<Register />} />
+            <Route path="forgot-password" element={<ForgotPassword />} />
             <Route
-              path="/aboutus"
-              element={<ProtectedRoute component={AboutUs} />}
-            />
-            <Route
-              path="/contactus"
-              element={<ProtectedRoute component={ContactUs} />}
+              path="/project/:id_project"
+              element={<ProtectedRoute component={Project} />}
             />
             <Route
               path="/dashboarduser"
@@ -44,10 +45,6 @@ function App() {
             <Route
               path="/settingan"
               element={<ProtectedRoute component={Settingan} />}
-            />
-            <Route
-              path="/project/:id_project"
-              element={<ProtectedRoute component={Project} />}
             />
             <Route
               path="/dashboardadmin"
@@ -68,6 +65,17 @@ function App() {
   );
 }
 
+// Wrapper component for Header to use AuthContext
+const HeaderWrapper = () => {
+  const { user, logout } = React.useContext(AuthContext);
+  return <Header user={user} onLogout={logout} />;
+};
+
+// Wrapper component for Login to use AuthContext
+const LoginWrapper = () => {
+  const { login } = React.useContext(AuthContext);
+  return <Login onLogin={login} />;
+};
 // Component to protect routes
 const ProtectedRoute = ({ component: Component }) => {
   const { user } = React.useContext(AuthContext);
