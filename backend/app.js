@@ -15,6 +15,7 @@ const projectRoutes = require("./routes/project");
 const taskRoutes = require("./routes/task");
 const profileRoutes = require("./routes/profile");
 const sessionRouter = require("./routes/session");
+const contactRouter = require("./routes/contact");
 
 app.use(cors());
 
@@ -65,6 +66,7 @@ app.use("/projects", projectRoutes);
 app.use("/:id_project/tasks", taskRoutes);
 app.use("/profile", profileRoutes);
 app.use("/session", sessionRouter);
+app.use("/contact", contactRouter);
 
 app.get("/", (req, res) => {
   res.send(" ");
