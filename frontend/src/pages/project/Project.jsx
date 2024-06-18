@@ -101,7 +101,7 @@ const Project = ({ updateSidebarProjectName }) => {
         headers: { Authorization: `Bearer ${token}` },
       });
       setShowDeleteProjectModal(false);
-      navigate("/dashboarduser");
+      navigate('/dashboarduser');
       window.location.reload();
     } catch (error) {
       console.error("Error deleting project:", error);

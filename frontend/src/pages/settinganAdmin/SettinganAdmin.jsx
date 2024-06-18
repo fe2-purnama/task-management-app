@@ -1,47 +1,131 @@
-import React, { useContext, useState } from "react";
-import { Container, Row, Col, Form, Button, Card } from "react-bootstrap";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Container, Row, Col, Form, Button, Card, Modal } from "react-bootstrap";
 import { AuthContext } from "../../context/AuthContext";
 import { ThemeContext } from "../../context/ThemeContext";
 import { FiSun, FiMoon } from 'react-icons/fi';
+import axios from 'axios';
 import "./settinganAdmin.css";
 
 const SettinganAdmin = () => {
-  const { user } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
   const { darkMode, toggleDarkMode } = useContext(ThemeContext);
-
+  const [profilePic, setProfilePic] = useState(""); 
   const [newUsername, setNewUsername] = useState("");
+  const [newEmail, setNewEmail] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
 
-  const handleUsernameChange = (e) => {
-    setNewUsername(e.target.value);
+  const fileInputRef = useRef(null);
+
+  useEffect(() => {
+    if (!user) {
+      navigate("/login");
+    } else {
+      // Set initial profile picture if available
+      setProfilePic(user.profilePic || user.foto); // Assuming user object has profilePic field
+    }
+  }, [user, navigate]);
+
+  const getToken = () => {
+    return localStorage.getItem('token'); // Assuming the token is stored with the key 'token'
   };
 
-  const handlePasswordChange = (e) => {
-    setNewPassword(e.target.value);
-  };
-
-  const handleConfirmPasswordChange = (e) => {
-    setConfirmPassword(e.target.value);
+  const handleProfilePicChange = async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const formData = new FormData();
+      formData.append('foto', file);
+  
+      try {
+        const response = await axios.put('http://localhost:3004/profile/foto', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': `Bearer ${getToken()}`
+          }
+        });
+        setProfilePic(response.data.foto); // Assuming the column name matches the server response
+        showModalMessage("Profile picture updated successfully!");
+      } catch (error) {
+        console.error("Error uploading the image", error);
+        showModalMessage("Failed to upload image");
+      }
+    }
   };
 
   const handleCancel = () => {
     setNewUsername("");
+    setCurrentPassword("");
     setNewPassword("");
     setConfirmPassword("");
   };
 
-  const handleConfirm = () => {
+  const handleConfirmUsername = async () => {
+    try {
+      await axios.put('http://localhost:3004/profile/username', { username: newUsername }, {
+        headers: { Authorization: `Bearer ${getToken()}` }
+      });
+      showModalMessage("Username updated successfully!");
+      setNewUsername("");
+    } catch (error) {
+      console.error("Error updating username", error);
+      showModalMessage("Failed to update username");
+    }
+  };
+
+  const handleConfirmPassword = async () => {
     if (newPassword !== confirmPassword) {
-      alert("Passwords do not match!");
+      showModalMessage("Passwords do not match!");
       return;
     }
-    // Implement save changes logic here
-    alert("Changes saved successfully!");
+
+    try {
+      await axios.put(
+        'http://localhost:3004/profile/password',
+        { currentPassword, password: newPassword, confirmPassword },
+        {
+          headers: { Authorization: `Bearer ${getToken()}` }
+        }
+      );
+      showModalMessage("Password changed successfully!");
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (error) {
+      console.error("Error updating password", error);
+      showModalMessage("Failed to change password");
+    }
+  };
+
+  const handleConfirmEmail = async () => {
+    try {
+      await axios.put('http://localhost:3004/profile/email', { email: newEmail }, {
+        headers: { Authorization: `Bearer ${getToken()}` }
+      });
+      showModalMessage("Email updated successfully!");
+      setNewEmail("");
+    } catch (error) {
+      console.error("Error updating email", error);
+      showModalMessage("Failed to update email");
+    }
+  };
+
+  const showModalMessage = (message) => {
+    setModalMessage(message);
+    setShowModal(true);
+  };
+
+  const handleLogout = () => {
+    logout(); // Assuming logout function is provided by AuthContext
+    navigate("/login");
   };
 
   return (
-    <div className="konten-setting settingan-page">
+    <div className="konten-setting SettinganAdmin-page">
       <Container className="mt-4">
         <h4 className="card-title fw-bold mb-4">Settings</h4>
         <Row className="mt-4">
@@ -52,19 +136,24 @@ const SettinganAdmin = () => {
                 <div className="d-flex flex-column align-items-center">
                   <div className="profile-pic-wrapper position-relative">
                     <img
-                      src="path-to-your-profile-pic.jpg"
+                      src={profilePic}
                       alt="Profile"
                       className="rounded-circle profile-pic mb-3"
-                      width="120"
-                      height="120"
                     />
                   </div>
                   <Button
                     variant="primary"
                     className="mt-2 btn-primary"
-                    onClick={() => {}}
+                    onClick={() => fileInputRef.current.click()}
                   >
                     Change Profile Pic
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleProfilePicChange}
+                      accept="image/*"
+                      className="d-none"
+                    />
                   </Button>
                 </div>
               </Card.Body>
@@ -82,6 +171,41 @@ const SettinganAdmin = () => {
                     {darkMode ? <FiSun /> : <FiMoon />}
                   </Button>
                 </div>
+              </Card.Body>
+            </Card>
+            <Card className="card-setting mb-4">
+              <Card.Body className="card-body-setting">
+                <Card.Title className="mb-2 mt-0 text-center">Change Email</Card.Title>
+                <Form>
+                  <Form.Group controlId="formCurrentEmail">
+                    <Form.Label>Current Email</Form.Label>
+                    <Form.Control
+                      type="email"
+                      placeholder="Enter current email"
+                      readOnly
+                      value={user?.email || ''}
+                      className="form-control"
+                    />
+                  </Form.Group>
+                  <Form.Group controlId="formNewEmail" className="mt-1">
+                    <Form.Label>New Email</Form.Label>
+                    <Form.Control
+                      type="email"
+                      placeholder="Enter new email"
+                      value={newEmail}
+                      onChange={(e) => setNewEmail(e.target.value)}
+                      className="form-control"
+                    />
+                  </Form.Group>
+                  <div className="d-flex justify-content-end mt-4">
+                    <Button variant="secondary" onClick={handleCancel} className="me-3">
+                      Cancel
+                    </Button>
+                    <Button variant="danger" onClick={handleConfirmEmail}>
+                      Save Changes
+                    </Button>
+                  </div>
+                </Form>
               </Card.Body>
             </Card>
           </Col>
@@ -106,7 +230,7 @@ const SettinganAdmin = () => {
                       type="text"
                       placeholder="Enter new username"
                       value={newUsername}
-                      onChange={handleUsernameChange}
+                      onChange={(e) => setNewUsername(e.target.value)}
                       className="form-control"
                     />
                   </Form.Group>
@@ -114,7 +238,7 @@ const SettinganAdmin = () => {
                     <Button variant="secondary" onClick={handleCancel} className="me-3">
                       Cancel
                     </Button>
-                    <Button variant="danger" onClick={handleConfirm}>
+                    <Button variant="danger" onClick={handleConfirmUsername}>
                       Save Changes
                     </Button>
                   </div>
@@ -123,41 +247,44 @@ const SettinganAdmin = () => {
             </Card>
             <Card className="card-setting mb-4">
               <Card.Body className="card-body-setting">
-                <Card.Title className="mb-0">Change Password</Card.Title>
+                <Card.Title className="mb-4">Change Password</Card.Title>
                 <Form>
                   <Form.Group controlId="formCurrentPassword">
                     <Form.Label>Current Password</Form.Label>
                     <Form.Control
                       type="password"
                       placeholder="Enter current password"
+                      value={currentPassword}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
                       className="form-control"
                     />
                   </Form.Group>
                   <Form.Group controlId="formNewPassword" className="mt-3">
-                    <Form.Label>New Password</Form.Label>
+                    <Form.Label className="mt-3">New Password</Form.Label>
                     <Form.Control
                       type="password"
                       placeholder="Enter new password"
                       value={newPassword}
-                      onChange={handlePasswordChange}
+                      onChange={(e) => setNewPassword(e.target.value)}
                       className="form-control"
                     />
+               
                   </Form.Group>
                   <Form.Group controlId="formConfirmPassword" className="mt-3">
-                    <Form.Label>Confirm New Password</Form.Label>
+                    <Form.Label className="mt-3">Confirm New Password</Form.Label>
                     <Form.Control
                       type="password"
                       placeholder="Confirm new password"
                       value={confirmPassword}
-                      onChange={handleConfirmPasswordChange}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
                       className="form-control"
                     />
                   </Form.Group>
-                  <div className="d-flex justify-content-end mt-4">
+                  <div className="d-flex justify-content-end mt-5">
                     <Button variant="secondary" onClick={handleCancel} className="me-3">
                       Cancel
                     </Button>
-                    <Button variant="danger" onClick={handleConfirm}>
+                    <Button variant="danger" onClick={handleConfirmPassword}>
                       Change Password
                     </Button>
                   </div>
@@ -167,6 +294,22 @@ const SettinganAdmin = () => {
           </Col>
         </Row>
       </Container>
+
+      {/* Modal for Action Status */}
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Action Status</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>{modalMessage}</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleLogout}>
+            Logout
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };

@@ -13,6 +13,7 @@ const Settingan = () => {
   const { darkMode, toggleDarkMode } = useContext(ThemeContext);
   const [profilePic, setProfilePic] = useState(""); 
   const [newUsername, setNewUsername] = useState("");
+  const [newEmail, setNewEmail] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -100,6 +101,19 @@ const Settingan = () => {
     }
   };
 
+  const handleConfirmEmail = async () => {
+    try {
+      await axios.put('http://localhost:3004/profile/email', { email: newEmail }, {
+        headers: { Authorization: `Bearer ${getToken()}` }
+      });
+      showModalMessage("Email updated successfully!");
+      setNewEmail("");
+    } catch (error) {
+      console.error("Error updating email", error);
+      showModalMessage("Failed to update email");
+    }
+  };
+
   const showModalMessage = (message) => {
     setModalMessage(message);
     setShowModal(true);
@@ -159,6 +173,41 @@ const Settingan = () => {
                 </div>
               </Card.Body>
             </Card>
+            <Card className="card-setting mb-4">
+              <Card.Body className="card-body-setting">
+                <Card.Title className="mb-2 mt-0 text-center">Change Email</Card.Title>
+                <Form>
+                  <Form.Group controlId="formCurrentEmail">
+                    <Form.Label>Current Email</Form.Label>
+                    <Form.Control
+                      type="email"
+                      placeholder="Enter current email"
+                      readOnly
+                      value={user?.email || ''}
+                      className="form-control"
+                    />
+                  </Form.Group>
+                  <Form.Group controlId="formNewEmail" className="mt-1">
+                    <Form.Label>New Email</Form.Label>
+                    <Form.Control
+                      type="email"
+                      placeholder="Enter new email"
+                      value={newEmail}
+                      onChange={(e) => setNewEmail(e.target.value)}
+                      className="form-control"
+                    />
+                  </Form.Group>
+                  <div className="d-flex justify-content-end mt-4">
+                    <Button variant="secondary" onClick={handleCancel} className="me-3">
+                      Cancel
+                    </Button>
+                    <Button variant="danger" onClick={handleConfirmEmail}>
+                      Save Changes
+                    </Button>
+                  </div>
+                </Form>
+              </Card.Body>
+            </Card>
           </Col>
           <Col md={8}>
             <Card className="card-setting mb-4">
@@ -198,7 +247,7 @@ const Settingan = () => {
             </Card>
             <Card className="card-setting mb-4">
               <Card.Body className="card-body-setting">
-                <Card.Title className="mb-0">Change Password</Card.Title>
+                <Card.Title className="mb-4">Change Password</Card.Title>
                 <Form>
                   <Form.Group controlId="formCurrentPassword">
                     <Form.Label>Current Password</Form.Label>
@@ -211,7 +260,7 @@ const Settingan = () => {
                     />
                   </Form.Group>
                   <Form.Group controlId="formNewPassword" className="mt-3">
-                    <Form.Label>New Password</Form.Label>
+                    <Form.Label className="mt-3">New Password</Form.Label>
                     <Form.Control
                       type="password"
                       placeholder="Enter new password"
@@ -219,9 +268,10 @@ const Settingan = () => {
                       onChange={(e) => setNewPassword(e.target.value)}
                       className="form-control"
                     />
+               
                   </Form.Group>
                   <Form.Group controlId="formConfirmPassword" className="mt-3">
-                    <Form.Label>Confirm New Password</Form.Label>
+                    <Form.Label className="mt-3">Confirm New Password</Form.Label>
                     <Form.Control
                       type="password"
                       placeholder="Confirm new password"
@@ -230,7 +280,7 @@ const Settingan = () => {
                       className="form-control"
                     />
                   </Form.Group>
-                  <div className="d-flex justify-content-end mt-4">
+                  <div className="d-flex justify-content-end mt-5">
                     <Button variant="secondary" onClick={handleCancel} className="me-3">
                       Cancel
                     </Button>
