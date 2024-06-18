@@ -20,7 +20,7 @@ class UserList extends Component {
       const token = localStorage.getItem("token");
       const response = await axios.get("http://localhost:3004/users", {
         headers: {
-          Authorization: `Bearer ${token}`, // Pastikan token dikirim dengan format Bearer
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -49,7 +49,7 @@ class UserList extends Component {
           `http://localhost:3004/users/${userToDelete.id_user}`,
           {
             headers: {
-              Authorization: `Bearer ${token}`, // Pastikan token dikirim dengan format Bearer
+              Authorization: `Bearer ${token}`,
             },
           }
         );
@@ -73,11 +73,11 @@ class UserList extends Component {
     const { users, error, showModal, userToDelete } = this.state;
 
     return (
-      <Container>
-        <h2 className="my-4 mt-5">User List</h2>
+      <Container className="mt-5">
+        <h2 className="mb-4">User List</h2>
         {error && <p className="text-danger">{error}</p>}
-        <Table striped bordered hover>
-          <thead>
+        <Table striped bordered hover className="table">
+          <thead className="thead-dark">
             <tr>
               <th className="text-center">No</th>
               <th>Username</th>
@@ -95,8 +95,9 @@ class UserList extends Component {
                   <Button
                     variant="danger"
                     onClick={() => this.handleShowModal(user)}
+                    className="delete-button"
                   >
-                    Delete
+                    <i className="fas fa-trash-alt"></i> Delete
                   </Button>
                 </td>
               </tr>
@@ -104,7 +105,12 @@ class UserList extends Component {
           </tbody>
         </Table>
 
-        <Modal show={showModal} onHide={this.handleCloseModal}>
+        <Modal
+          show={showModal}
+          onHide={this.handleCloseModal}
+          centered
+          size="sm"
+        >
           <Modal.Header closeButton>
             <Modal.Title>Confirm Delete</Modal.Title>
           </Modal.Header>
