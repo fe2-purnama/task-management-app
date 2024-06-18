@@ -11,6 +11,7 @@ router.use(verifyToken);
 router.get("/", profileController.profile);
 
 router.put("/username", profileController.updateUsername);
+router.put("/email", profileController.updateEmail);
 router.put("/password", profileController.updatePassword);
 router.put("/foto", upload.single('foto'), profileController.updateFoto);
 
