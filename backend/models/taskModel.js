@@ -74,7 +74,7 @@ const Task = {
     );
   },
   updateStatus: (id, status, callback) => {
-    const query = "UPDATE task SET status = ? WHERE id_task = ?";
+    const query = "UPDATE task SET status = 'finished' WHERE id_task = ?";
     db.query(query, [status, id], (err, results) => {
       if (err) {
         console.error("Error updating task status:", err);
