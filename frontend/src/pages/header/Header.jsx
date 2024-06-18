@@ -94,63 +94,54 @@ const Header = () => {
       </div>
 
       <footer className="footer">
-        <Container>
+        <div className="container">
           <div className="row footer-top">
             <div className="col-md-3">
-              <div className="footer-logo-containe">
-                <img src={logo} alt="Footer Logo" className="footer-logo" />
+              <div className="footer-logo-container">
+                <img src="/letter-n.png" alt="Notic Logo" className="footer-logo" />
                 <h3 className="fw-bold">Notic</h3>
               </div>
               <p>Get Noticed with Notic.</p>
             </div>
-            
-            <div className="col-md-3">
-              <h5 className="fw-bold">Product</h5>
+            <div className="col-md-2">
+              <h5 className="fw-bold">Products</h5>
               <ul className="list-unstyled">
-                <li><a href="#overview">Overview</a></li>
-                <li><a href="#features">Features</a></li>
-                <li><a href="#solutions">Solutions</a></li>
-                <li><a href="#tutorials">Tutorials</a></li>
-                <li><a href="#pricing">Pricing</a></li>
-                <li><a href="#releases">Releases</a></li>
+                <li><a href="#">Overview</a></li>
+                <li><a href="#">Supplier</a></li>
               </ul>
             </div>
-            <div className="col-md-3">
+            <div className="col-md-2">
               <h5 className="fw-bold">Company</h5>
               <ul className="list-unstyled">
-                <li><a href="#about">About us</a></li>
-                <li><a href="#careers">Careers</a></li>
-                <li><a href="#press">Press</a></li>
-                <li><a href="#news">News</a></li>
-                <li><a href="#media">Media kit</a></li>
-                <li><a href="#contact">Contact</a></li>
+                <li><a href="/aboutUs">About us</a></li>
+                <li><a href="/contactUs">Contact us</a></li>
+              </ul>
+            </div>
+            <div className="col-md-2">
+              <h5 className="fw-bold">Further Information</h5>
+              <ul className="list-unstyled">
+                <li><a href="#">Terms & Conditions</a></li>
+                <li><a href="#">Privacy Policy</a></li>
               </ul>
             </div>
             <div className="col-md-3">
-              <h5 className="fw-bold">Resources</h5>
-              <ul className="list-unstyled">
-                <li><a href="#blog">Blog</a></li>
-                <li><a href="#newsletter">Newsletter</a></li>
-                <li><a href="#events">Events</a></li>
-                <li><a href="#help">Help centre</a></li>
-                <li><a href="#tutorials">Tutorials</a></li>
-                <li><a href="#support">Support</a></li>
-              </ul>
+              <h5 className="fw-bold text-center">Follow us</h5>
+              <div className="social-icons">
+                <a href="#"><i className="fab fa-facebook-f"></i></a>
+                <a href="#"><i className="fab fa-twitter"></i></a>
+                <a href="#"><i className="fab fa-linkedin-in"></i></a>
+                <a href="#"><i className="fab fa-github"></i></a>
+                <a href="#"><i className="fab fa-angellist"></i></a>
+              </div>
             </div>
           </div>
           <div className="footer-bottom text-center mt-3">
-            <div className="social-icons">
-              <a href="#twitter"><i className="fab fa-twitter"></i></a>
-              <a href="#linkedin"><i className="fab fa-linkedin-in"></i></a>
-              <a href="#facebook"><i className="fab fa-facebook-f"></i></a>
-              <a href="#github"><i className="fab fa-github"></i></a>
-              <a href="#angellist"><i className="fab fa-angellist"></i></a>
-              <a href="#dribbble"><i className="fab fa-dribbble"></i></a>
-            </div>
             <p>&copy; 2024 Notic. All rights reserved.</p>
           </div>
-        </Container>
+        </div>
       </footer>
+
+
     </div>
   );
 };
