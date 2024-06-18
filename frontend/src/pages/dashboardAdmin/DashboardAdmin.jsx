@@ -174,7 +174,7 @@ const DashboardAdmin = () => {
             </Col>
           </Row>
           <Row className="mb-3">
-            <Col md={10}>
+            <Col md={8}>
               <Card className="card-hover card-grafik">
                 <Card.Body className="card-body-radius">
                   <Card.Title className="fw-bold">Total Users</Card.Title>

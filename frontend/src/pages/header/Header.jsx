@@ -94,7 +94,7 @@ const Header = () => {
       </div>
 
       <footer className="footer">
-        <Container>
+        <div className="container">
           <div className="row footer-top">
             <div className="col-md-3">
               <div className="footer-logo-container">
@@ -138,7 +138,7 @@ const Header = () => {
           <div className="footer-bottom text-center mt-3">
             <p>&copy; 2024 Notic. All rights reserved.</p>
           </div>
-          </Container>
+        </div>
       </footer>
 
 
