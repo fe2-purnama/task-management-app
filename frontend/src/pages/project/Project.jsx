@@ -26,22 +26,22 @@ const Project = () => {
   const [showDescriptionModal, setShowDescriptionModal] = useState(false);
   const [modalTask, setModalTask] = useState(null);
   const [modalMode, setModalMode] = useState("add");
-  useEffect(() => {
-    const fetchCompletedTasks = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const response = await axios.get(
-          `http://localhost:3004/${id_project}/tasks?status=Finished`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        setCompletedTasks(response.data);
-      } catch (error) {
-        console.error("Error fetching completed tasks:", error);
-      }
-    };
+useEffect(() => {
+  const fetchCompletedTasks = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get(
+        `http://localhost:3004/${id_project}/tasks?status=Finished`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setCompletedTasks(response.data);
+    } catch (error) {
+      console.error("Error fetching completed tasks:", error);
+    }
+  };
 
-    fetchCompletedTasks();
-  }, [id_project]);
+  fetchCompletedTasks();
+}, [id_project]);
 
   useEffect(() => {
     const fetchProjectDetails = async () => {
@@ -86,9 +86,10 @@ const Project = () => {
   const handleDelete = async (id) => {
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:3004/${id_project}/tasks/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.delete(
+        `http://localhost:3004/projects/${id_project}/tasks/${id}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       setTasks(tasks.filter((task) => task.id_task !== id));
     } catch (error) {
       console.error("Error deleting task:", error);
@@ -117,11 +118,11 @@ const Project = () => {
     setTasks(updatedTasks);
   };
 
+
   const handleSaveTask = async () => {
     try {
       const token = localStorage.getItem("token");
 
-      // Validate and set defaults if necessary
       if (!modalTask.name.trim()) {
         alert("Task name cannot be empty");
         return;
@@ -130,23 +131,17 @@ const Project = () => {
         alert("Task description cannot be empty");
         return;
       }
-      if (!modalTask.tag) {
-        modalTask.tag = ""; // Set default tag if not provided
-      }
-      if (!modalTask.date) {
-        modalTask.date = new Date().toISOString().split("T")[0]; // Set default date if not provided
-      }
 
       if (modalMode === "add") {
         const response = await axios.post(
-          `http://localhost:3004/${id_project}/tasks`,
+          `http://localhost:3004/projects/${id_project}/tasks`,
           modalTask,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setTasks([...tasks, response.data]);
       } else if (modalMode === "edit") {
         await axios.put(
-          `http://localhost:3004/${id_project}/tasks/${modalTask.id_task}`,
+          `http://localhost:3004/projects/${id_project}/tasks/${modalTask.id_task}`,
           modalTask,
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -162,15 +157,16 @@ const Project = () => {
     }
   };
 
-  const handleCommentClick = (id) => {
-    const task = tasks.find((task) => task.id_task === id);
-    setModalTask(task);
-    setShowDescriptionModal(true);
-  };
-  useEffect(() => {
-    const completed = tasks.filter((task) => task.status === "Finished");
-    setCompletedTasks(completed);
-  }, [tasks]);
+const handleCommentClick = (id) => {
+  const task = tasks.find((task) => task.id_task === id);
+  setModalTask(task);
+  setShowDescriptionModal(true);
+};
+useEffect(() => {
+  const completed = tasks.filter((task) => task.status === "Finished");
+  setCompletedTasks(completed);
+}, [tasks]);
+
 
   return (
     <div className="container-fluid mt-5">
@@ -222,7 +218,7 @@ const Project = () => {
                     deskripsi: "",
                     tags: [],
                     status: "Not Started",
-                    date: "",
+                    dueDate: "",
                     priority: "LOW",
                   });
                 }}
@@ -239,7 +235,9 @@ const Project = () => {
             handleCheckboxChange={handleCheckboxChange}
             handleCommentClick={handleCommentClick}
           />
-          <h5 className="mt-5">Completed Projects ({completedTasks.length})</h5>
+          <h5 className="mt-5">
+            Completed Projects ({completedTasks.length})
+          </h5>
           {/* Completed project table */}
           <TaskTable
             tasks={completedTasks}
@@ -275,7 +273,6 @@ const Project = () => {
                     onChange={(e) =>
                       setModalTask({
                         ...modalTask,
-
                         deskripsi: e.target.value,
                       })
                     }
@@ -285,11 +282,13 @@ const Project = () => {
                   <Form.Label>Task Tags</Form.Label>
                   <Form.Control
                     type="text"
-                    value={modalTask?.tag || ""}
+                    value={modalTask?.tags ? modalTask.tags.join(", ") : ""}
                     onChange={(e) =>
                       setModalTask({
                         ...modalTask,
-                        tag: e.target.value,
+                        tags: e.target.value
+                          .split(",")
+                          .map((tag) => tag.trim()),
                       })
                     }
                   />
@@ -298,9 +297,9 @@ const Project = () => {
                   <Form.Label>Due Date</Form.Label>
                   <Form.Control
                     type="date"
-                    value={modalTask?.date || ""}
+                    value={modalTask?.dueDate || ""}
                     onChange={(e) =>
-                      setModalTask({ ...modalTask, date: e.target.value })
+                      setModalTask({ ...modalTask, dueDate: e.target.value })
                     }
                   />
                 </Form.Group>
@@ -316,21 +315,6 @@ const Project = () => {
                     <option value="LOW">Low</option>
                     <option value="MEDIUM">Medium</option>
                     <option value="HIGH">High</option>
-                  </Form.Control>
-                </Form.Group>
-                <Form.Group className="mb-3">
-                  <Form.Label>Status</Form.Label>
-                  <Form.Control
-                    as="select"
-                    value={modalTask?.status || "Not Started"}
-                    onChange={(e) =>
-                      setModalTask({ ...modalTask, status: e.target.value })
-                    }
-                  >
-                    <option value="not started">Not Started</option>
-                    <option value="on process">On Process</option>
-                    <option value="complete">Complete</option>
-                    <option value="finished">Finished</option>
                   </Form.Control>
                 </Form.Group>
               </Form>
@@ -355,7 +339,8 @@ const Project = () => {
               <Modal.Title>Task Description</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              <p>{modalTask?.deskripsi}</p>
+              <p>{modalTask?.deskripsi}</p>{" "}
+              {/* Periksa apakah deskripsi tersedia di modalTask */}
             </Modal.Body>
           </Modal>
         </div>
