@@ -1,56 +1,117 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Container, Row, Col, Form, Button, Card } from "react-bootstrap";
+import { Container, Row, Col, Form, Button, Card, Modal } from "react-bootstrap";
 import { AuthContext } from "../../context/AuthContext";
 import { ThemeContext } from "../../context/ThemeContext";
 import { FiSun, FiMoon } from 'react-icons/fi';
+import axios from 'axios';
 import "./settingan.css";
 
 const Settingan = () => {
-  const { user } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
   const { darkMode, toggleDarkMode } = useContext(ThemeContext);
-  const [profilePic, setProfilePic] = useState("src/assets/restya.jpeg");
+  const [profilePic, setProfilePic] = useState(""); 
   const [newUsername, setNewUsername] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
 
   const fileInputRef = useRef(null);
 
   useEffect(() => {
     if (!user) {
       navigate("/login");
+    } else {
+      // Set initial profile picture if available
+      setProfilePic(user.profilePic || user.foto); // Assuming user object has profilePic field
     }
   }, [user, navigate]);
 
-  const handleProfilePicChange = (e) => {
+  const getToken = () => {
+    return localStorage.getItem('token'); // Assuming the token is stored with the key 'token'
+  };
+
+  const handleProfilePicChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfilePic(reader.result);
-      };
-      reader.readAsDataURL(file);
+      const formData = new FormData();
+      formData.append('foto', file);
+  
+      try {
+        const response = await axios.put('http://localhost:3004/profile/foto', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': `Bearer ${getToken()}`
+          }
+        });
+        setProfilePic(response.data.foto); // Assuming the column name matches the server response
+        showModalMessage("Profile picture updated successfully!");
+      } catch (error) {
+        console.error("Error uploading the image", error);
+        showModalMessage("Failed to upload image");
+      }
     }
   };
 
   const handleCancel = () => {
     setNewUsername("");
+    setCurrentPassword("");
     setNewPassword("");
     setConfirmPassword("");
   };
 
-  const handleConfirm = () => {
+  const handleConfirmUsername = async () => {
+    try {
+      await axios.put('http://localhost:3004/profile/username', { username: newUsername }, {
+        headers: { Authorization: `Bearer ${getToken()}` }
+      });
+      showModalMessage("Username updated successfully!");
+      setNewUsername("");
+    } catch (error) {
+      console.error("Error updating username", error);
+      showModalMessage("Failed to update username");
+    }
+  };
+
+  const handleConfirmPassword = async () => {
     if (newPassword !== confirmPassword) {
-      alert("Passwords do not match!");
+      showModalMessage("Passwords do not match!");
       return;
     }
-    // Implement the confirm logic here
-    alert("Changes saved successfully!");
+
+    try {
+      await axios.put(
+        'http://localhost:3004/profile/password',
+        { currentPassword, password: newPassword, confirmPassword },
+        {
+          headers: { Authorization: `Bearer ${getToken()}` }
+        }
+      );
+      showModalMessage("Password changed successfully!");
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (error) {
+      console.error("Error updating password", error);
+      showModalMessage("Failed to change password");
+    }
+  };
+
+  const showModalMessage = (message) => {
+    setModalMessage(message);
+    setShowModal(true);
+  };
+
+  const handleLogout = () => {
+    logout(); // Assuming logout function is provided by AuthContext
+    navigate("/login");
   };
 
   return (
-    <div className="konten-setting settingan-page"> {/* Tambahkan kelas settingan-page */}
+    <div className="konten-setting settingan-page">
       <Container className="mt-4">
         <h4 className="card-title fw-bold mb-4">Settings</h4>
         <Row className="mt-4">
@@ -128,7 +189,7 @@ const Settingan = () => {
                     <Button variant="secondary" onClick={handleCancel} className="me-3">
                       Cancel
                     </Button>
-                    <Button variant="danger" onClick={handleConfirm}>
+                    <Button variant="danger" onClick={handleConfirmUsername}>
                       Save Changes
                     </Button>
                   </div>
@@ -144,6 +205,8 @@ const Settingan = () => {
                     <Form.Control
                       type="password"
                       placeholder="Enter current password"
+                      value={currentPassword}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
                       className="form-control"
                     />
                   </Form.Group>
@@ -171,7 +234,7 @@ const Settingan = () => {
                     <Button variant="secondary" onClick={handleCancel} className="me-3">
                       Cancel
                     </Button>
-                    <Button variant="danger" onClick={handleConfirm}>
+                    <Button variant="danger" onClick={handleConfirmPassword}>
                       Change Password
                     </Button>
                   </div>
@@ -181,6 +244,22 @@ const Settingan = () => {
           </Col>
         </Row>
       </Container>
+
+      {/* Modal for Action Status */}
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Action Status</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>{modalMessage}</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleLogout}>
+            Logout
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
