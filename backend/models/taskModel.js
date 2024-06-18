@@ -84,6 +84,7 @@ const Task = {
       callback(null, results);
     });
   },
+
   delete: (id, callback) => {
     const query = "DELETE FROM task WHERE id_task = ?";
     db.query(query, [id], (err, results) => {

@@ -47,3 +47,112 @@
     background-color:#63c2eb ;
     color: white;
 }
+
+/* Mobile view */
+@media (max-width: 767px) {
+  .project-container {
+    padding: 10px;
+  }
+
+  h2 {
+    font-size: 1.2em;
+  }
+
+  .pencil-icon {
+    font-size: 1em;
+  }
+
+  .table {
+    font-size: 0.8em;
+  }
+
+  .btn {
+    font-size: 0.8em;
+  }
+
+  .modal-dialog {
+    width: 100%;
+    margin: 0;
+  }
+}
+
+/* Desktop view */
+@media (min-width: 768px) {
+  .project-container {
+    padding: 20px;
+  }
+
+  h2 {
+    font-size: 2em;
+  }
+
+  .pencil-icon {
+    font-size: 1.5em;
+  }
+
+  .table {
+    font-size: 1em;
+  }
+
+  .btn {
+    font-size: 1em;
+  }
+
+  .modal-dialog {
+    max-width: 600px;
+    margin: 30px auto;
+  }
+}
+
+/* Common styles */
+.btn-new-task {
+  background-color: #007bff;
+  color: white;
+}
+
+.btn-new-task:hover {
+  background-color: #0056b3;
+  color: white;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+.tag-tag{
+  background-color: rgba(255, 196, 0, 0.187);
+  color:  rgb(255, 183, 0);
+  border-radius: 5px;
+  padding: 5px;
+  font-weight: bold;
+}
+
+.priority-low {
+  color: rgb(28, 171, 28);
+}
+
+.priority-medium {
+  color: orange;
+}
+
+.priority-high {
+  color: red;
+}
+.prioritas{
+  font-weight: bold;
+}
+
+.status-not-started {
+  background-color: #cccccc; /* abu-abu */
+}
+
+.status-on-process {
+  background-color: #ffff00; /* kuning */
+}
+
+.status-complete {
+  background-color: #00ff00; /* hijau */
+}
+
+.status-finished {
+  background-color: #0000ff; /* biru */
+}
