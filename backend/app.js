@@ -31,10 +31,19 @@ app.use(
     name: "secretName",
     cookie: {
       sameSite: true,
-      maxAge: 60000,
+      maxAge: 300000, // 5 menit
     },
   })
 );
+
+app.use((req, res, next) => {
+  if (req.session) {
+    req.session.cookie.expires = new Date(Date.now() + 300000); // Set kembali 5 menit dari sekarang
+    req.session.cookie.maxAge = 300000; // Set kembali 5 menit
+  }
+  next();
+});
+
 app.use(flash());
 
 app.use(function (req, res, next) {

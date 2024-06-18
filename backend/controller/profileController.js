@@ -63,6 +63,35 @@ const updateUsername = (req, res) => {
   );
 };
 
+const updateEmail = (req, res) => {
+  const id_user = req.user.id_user;
+  if (!id_user) {
+    return res.status(401).send("Unauthorized");
+  }
+
+  const { email } = req.body;
+  if (!email) {
+    return res.status(400).send("Email is required");
+  }
+
+  connection.query(
+    "UPDATE user SET email = ? WHERE id_user = ?",
+    [email, id_user],
+    (error, results) => {
+      if (error) {
+        console.error("Error updating email:", error);
+        return res.status(500).send("Internal Server Error");
+      }
+
+      if (results.affectedRows === 0) {
+        return res.status(404).send("User not found");
+      }
+
+      res.send("email updated successfully");
+    }
+  );
+};
+
 // Fungsi untuk memperbarui password
 const updatePassword = async (req, res) => {
   const id_user = req.user.id_user;
@@ -176,6 +205,7 @@ const updateFoto = async (req, res) => {
 module.exports = {
   profile,
   updateUsername,
+  updateEmail,
   updatePassword,
   updateFoto,
 };

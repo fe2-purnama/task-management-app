@@ -48,7 +48,7 @@ const loginAuth = async (req, res) => {
           token,
         });
       } else {
-        res.status(401).json({ message: "Akun tidak ditemukan" });
+        res.status(401).json({ message: "Account not found" });
       }
     } catch (error) {
       console.error("Error during login authentication:", error);

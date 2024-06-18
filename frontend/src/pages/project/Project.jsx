@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from "react";
 import {
-  Dropdown,
-  DropdownButton,
-  ButtonGroup,
   Button,
   Modal,
   Form,
@@ -12,12 +9,13 @@ import {
   faCommenting,
   faEdit,
   faTrash,
+  faPencilAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import "./project.css";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 
-const Project = () => {
+const Project = ({ updateSidebarProjectName }) => {
   const [completedTasks, setCompletedTasks] = useState([]);
   const { id_project } = useParams();
   const [projectName, setProjectName] = useState("");
@@ -26,19 +24,22 @@ const Project = () => {
   const [showDescriptionModal, setShowDescriptionModal] = useState(false);
   const [modalTask, setModalTask] = useState(null);
   const [modalMode, setModalMode] = useState("add");
-useEffect(() => {
-  const fetchCompletedTasks = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(
-        `http://localhost:3004/${id_project}/tasks?status=Finished`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setCompletedTasks(response.data);
-    } catch (error) {
-      console.error("Error fetching completed tasks:", error);
-    }
-  };
+  const [showProjectNameModal, setShowProjectNameModal] = useState(false);
+  const [showDeleteProjectModal, setShowDeleteProjectModal] = useState(false);
+
+  useEffect(() => {
+    const fetchCompletedTasks = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get(
+          `http://localhost:3004/${id_project}/tasks?status=Finished`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setCompletedTasks(response.data);
+      } catch (error) {
+        console.error("Error fetching completed tasks:", error);
+      }
+    };
 
   fetchCompletedTasks();
 }, [id_project]);
@@ -94,6 +95,19 @@ useEffect(() => {
     } catch (error) {
       console.error("Error deleting task:", error);
     }
+  };
+
+  const handleDeleteProject = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(`http://localhost:3004/projects/${id_project}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      // Redirect or update the UI after project deletion
+    } catch (error) {
+      console.error("Error deleting project:", error);
+    }
+    setShowDeleteProjectModal(false);
   };
 
   const handleCheckboxChange = (id, checked) => {
@@ -157,56 +171,53 @@ useEffect(() => {
     }
   };
 
-const handleCommentClick = (id) => {
-  const task = tasks.find((task) => task.id_task === id);
-  setModalTask(task);
-  setShowDescriptionModal(true);
-};
-useEffect(() => {
-  const completed = tasks.filter((task) => task.status === "Finished");
-  setCompletedTasks(completed);
-}, [tasks]);
+  const handleCommentClick = (id) => {
+    const task = tasks.find((task) => task.id_task === id);
+    setModalTask(task);
+    setShowDescriptionModal(true);
+  };
 
+  const handleSaveProjectName = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.put(
+        `http://localhost:3004/projects/${id_project}`,
+        { nama: projectName },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setShowProjectNameModal(false);
+      window.location.reload(); 
+    } catch (error) {
+      console.error("Error updating project name:", error);
+    }
+  };
+
+  useEffect(() => {
+    const completed = tasks.filter((task) => task.status === "Finished");
+    setCompletedTasks(completed);
+  }, [tasks]);
 
   return (
     <div className="container-fluid mt-5">
       <div className="row">
         <div className="col-md-12">
-          <h2>Project: {projectName}</h2>
-          <div className="d-flex justify-content-between mb-3">
-            <input
-              type="text"
-              className="form-control w-50"
-              placeholder="Search by everything data"
+          <h2 className="d-flex align-items-center">
+            Project: {projectName}
+            <FontAwesomeIcon
+              icon={faPencilAlt}
+              className="ms-2 pencil-icon"
+              onClick={() => setShowProjectNameModal(true)}
+              style={{ cursor: "pointer", fontSize: "15px" }}
             />
+          </h2>
+          <div className="d-flex justify-content-end mb-3">
             <div>
-              <DropdownButton
-                as={ButtonGroup}
-                id="sort-dropdown"
-                title="Sort"
-                variant="light"
-                className="me-2"
+              <button
+                className="btn btn-danger me-2"
+                onClick={() => setShowDeleteProjectModal(true)}
               >
-                <Dropdown.Item>Date</Dropdown.Item>
-                <Dropdown.Item>Priority</Dropdown.Item>
-                <Dropdown.Item>Status</Dropdown.Item>
-              </DropdownButton>
-              <DropdownButton
-                as={ButtonGroup}
-                id="filter-dropdown"
-                title="Filter"
-                variant="light"
-                className="me-2"
-              >
-                <Dropdown.Item>Priority: Low</Dropdown.Item>
-                <Dropdown.Item>Priority: Medium</Dropdown.Item>
-                <Dropdown.Item>Priority: High</Dropdown.Item>
-                <Dropdown.Divider />
-                <Dropdown.Item>Status: Not Started</Dropdown.Item>
-                <Dropdown.Item>Status: On Process</Dropdown.Item>
-                <Dropdown.Item>Status: Complete</Dropdown.Item>
-                <Dropdown.Item>Status: Finished</Dropdown.Item>
-              </DropdownButton>
+                Delete Project
+              </button>
               <button
                 className="btn btn-new-task"
                 onClick={() => {
@@ -317,6 +328,21 @@ useEffect(() => {
                     <option value="HIGH">High</option>
                   </Form.Control>
                 </Form.Group>
+                <Form.Group className="mb-3">
+                  <Form.Label>Status</Form.Label>
+                  <Form.Control
+                    as="select"
+                    value={modalTask?.status || "Not Started"}
+                    onChange={(e) =>
+                      setModalTask({ ...modalTask, status: e.target.value })
+                    }
+                  >
+                    <option value="Not Started">Not Started</option>
+                    <option value="On Process">On Process</option>
+                    <option value="Complete">Complete</option>
+                    <option value="Finished">Finished</option>
+                  </Form.Control>
+                </Form.Group>
               </Form>
             </Modal.Body>
             <Modal.Footer>
@@ -342,6 +368,59 @@ useEffect(() => {
               <p>{modalTask?.deskripsi}</p>{" "}
               {/* Periksa apakah deskripsi tersedia di modalTask */}
             </Modal.Body>
+          </Modal>
+          <Modal
+            show={showProjectNameModal}
+            onHide={() => setShowProjectNameModal(false)}
+          >
+            <Modal.Header closeButton>
+              <Modal.Title>Edit Project Name</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <Form>
+                <Form.Group className="mb-3">
+                  <Form.Label>Project Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    value={projectName}
+                    onChange={(e) => setProjectName(e.target.value)}
+                  />
+                </Form.Group>
+              </Form>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button
+                variant="secondary"
+                onClick={() => setShowProjectNameModal(false)}
+              >
+                Close
+              </Button>
+              <Button variant="primary" onClick={handleSaveProjectName}>
+                Save
+              </Button>
+            </Modal.Footer>
+          </Modal>
+          <Modal
+            show={showDeleteProjectModal}
+            onHide={() => setShowDeleteProjectModal(false)}
+          >
+            <Modal.Header closeButton>
+              <Modal.Title>Confirm Project Deletion</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <p>Are you sure you want to delete this project?</p>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button
+                variant="secondary"
+                onClick={() => setShowDeleteProjectModal(false)}
+              >
+                Cancel
+              </Button>
+              <Button variant="danger" onClick={handleDeleteProject}>
+                Delete
+              </Button>
+            </Modal.Footer>
           </Modal>
         </div>
       </div>
@@ -383,7 +462,6 @@ const TaskTable = ({
             </td>
             <td>
               {task.name}
-
               <button onClick={() => handleCommentClick(task.id_task)}>
                 <FontAwesomeIcon icon={faCommenting} />
               </button>
