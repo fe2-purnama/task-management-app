@@ -66,7 +66,8 @@ app.use("/projects", projectRoutes);
 app.use("/:id_project/tasks", taskRoutes);
 app.use("/profile", profileRoutes);
 app.use("/session", sessionRouter);
-app.use("/contact", contactRouter);
+app.use("/contact", contactRouter)
+app.use('/:id/status', taskRoutes);
 
 app.get("/", (req, res) => {
   res.send(" ");

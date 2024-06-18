@@ -2,7 +2,7 @@ const db = require("../library/database");
 
 const Task = {
   create: (data, callback) => {
-    const dateOnly = new Date(data.date).toISOString().split('T')[0];
+    const dateOnly = new Date(data.date).toISOString().split("T")[0];
     const query =
       "INSERT INTO task (id_project, name, deskripsi, tag, status, date, priority) VALUES (?, ?, ?, ?, ?, ?, ?)";
     db.query(
@@ -50,7 +50,7 @@ const Task = {
     });
   },
   update: (id, data, callback) => {
-    const dateOnly = new Date(data.date).toISOString().split('T')[0];
+    const dateOnly = new Date(data.date).toISOString().split("T")[0];
     const query =
       "UPDATE task SET id_project = ?, name = ?, deskripsi = ?, tag = ?, status = ?, date = ?, priority = ? WHERE id_task = ?";
     db.query(
@@ -76,7 +76,7 @@ const Task = {
     );
   },
   updateStatus: (id, status, callback) => {
-    const query = "UPDATE task SET status = 'finished' WHERE id_task = ?";
+    const query = "UPDATE task SET status = ? WHERE id_task = ?";
     db.query(query, [status, id], (err, results) => {
       if (err) {
         console.error("Error updating task status:", err);
@@ -86,6 +86,7 @@ const Task = {
       callback(null, results);
     });
   },
+
   delete: (id, callback) => {
     const query = "DELETE FROM task WHERE id_task = ?";
     db.query(query, [id], (err, results) => {
