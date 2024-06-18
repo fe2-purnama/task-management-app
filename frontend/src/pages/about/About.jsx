@@ -15,8 +15,8 @@ const ContactUs = () => {
     { name: "Bagas Restya E.", role: "Lead Developer", image: restya },
     { name: "Maulana Arya Yoga", role: "Front-End Developer", image: yoga },
     { name: "Aldino Marsel P.", role: "Front-End Developer", image: dino },
-    { name: "Mohammad Fauzi H.", role: "Back-End Developer", image: rizal },
-    { name: "Ahmad Rizal B.", role: "Back-End Developer", image: fauzi },
+    { name: "Mohammad Fauzi H.", role: "Back-End Developer", image: fauzi },
+    { name: "Ahmad Rizal B.", role: "Back-End Developer", image: rizal },
   ];
 
   return (

@@ -2,7 +2,6 @@ import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
-import Header from "./pages/header/Header";
 import Home from "./pages/home/Home";
 import AboutUs from "./pages/about/About";
 import ContactUs from "./pages/contact/Contact";
@@ -12,8 +11,8 @@ import ForgotPassword from "./pages/forgotPassword/ForgotPassword";
 import DashboardUser from "./pages/dahsboardUser/DashboardUser";
 import Sidebar from "./pages/sidebar/Sidebar";
 import Settingan from "./pages/settingan/Settingan";
-import DashboardAdmin from "./pages/dashboardAdmin/DashboardAdmin"; // Import komponen baru
-import SidebarAdmin from "./pages/sidebarAdmin/SidebarAdmin"; // Import komponen baru
+import DashboardAdmin from "./pages/dashboardAdmin/DashboardAdmin";
+import SidebarAdmin from "./pages/sidebarAdmin/SidebarAdmin";
 import UserList from "./pages/userList/UserList";
 import SettinganAdmin from "./pages/settinganAdmin/SettinganAdmin";
 import Project from "./pages/project/Project";
@@ -26,14 +25,18 @@ function App() {
       <ThemeProvider>
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<HeaderWrapper />}>
-              <Route index element={<Home />} />
-              <Route path="aboutus" element={<AboutUs />} />
-              <Route path="contactus" element={<ContactUs />} />
-            </Route>
-            <Route path="login" element={<LoginWrapper />} />
-            <Route path="register" element={<Register />} />
-            <Route path="forgot-password" element={<ForgotPassword />} />
+            <Route path="/" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/home" element={<ProtectedRoute component={Home} />} />
+            <Route
+              path="/aboutus"
+              element={<ProtectedRoute component={AboutUs} />}
+            />
+            <Route
+              path="/contactus"
+              element={<ProtectedRoute component={ContactUs} />}
+            />
             <Route
               path="/dashboarduser"
               element={<ProtectedRoute component={DashboardUser} />}
@@ -43,7 +46,7 @@ function App() {
               element={<ProtectedRoute component={Settingan} />}
             />
             <Route
-              path="/project"
+              path="/project/:id_project"
               element={<ProtectedRoute component={Project} />}
             />
             <Route
@@ -65,40 +68,28 @@ function App() {
   );
 }
 
-// Wrapper component for Header to use AuthContext
-const HeaderWrapper = () => {
-  const { user, logout } = React.useContext(AuthContext);
-  return <Header user={user} onLogout={logout} />;
-};
-
-// Wrapper component for Login to use AuthContext
-const LoginWrapper = () => {
-  const { login } = React.useContext(AuthContext);
-  return <Login onLogin={login} />;
-};
-
 // Component to protect routes
 const ProtectedRoute = ({ component: Component }) => {
   const { user } = React.useContext(AuthContext);
   return user ? (
-    <div className="protected-route-container">
+    <div className="protected-route-container d-flex">
       <Sidebar user={user} />
       <Component user={user} />
     </div>
   ) : (
-    <Navigate to="/login" />
+    <Navigate to="/" />
   );
 };
 
 const ProtectedRouteAdmin = ({ component: Component }) => {
   const { user } = React.useContext(AuthContext);
   return user ? (
-    <div className="protected-route-container">
+    <div className="protected-route-container d-flex">
       <SidebarAdmin user={user} />
       <Component user={user} />
     </div>
   ) : (
-    <Navigate to="/login" />
+    <Navigate to="/" />
   );
 };
 
