@@ -52,9 +52,9 @@ const sendEmailReminders = (tasks) => {
   });
 };
 
-// Schedule a cron job to run every day at 7 AM
-cron.schedule("*0 7 * * *", () => {
-  console.log("Running cron job");
+// Schedule a cron job to run every day at 7AM
+cron.schedule("0 7 * * *", () => {
+  console.log("Running cron job...");
 
   // Query to find tasks with deadlines within the next 24 hours
   const query = `
