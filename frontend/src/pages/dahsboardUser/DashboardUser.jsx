@@ -125,7 +125,7 @@ const DashboardUser = () => {
             </Col>
           </Row>
           <Row className="mb-3">
-            <Col md={8}>
+            <Col md={12}>
               <Card className="card-hover">
                 <Card.Body>
                   <Card.Title className="fw-bold">Tasks Done</Card.Title>
@@ -133,30 +133,7 @@ const DashboardUser = () => {
                 </Card.Body>
               </Card>
             </Col>
-            <Col md={4}>
-              <Card className="card-hover">
-                <Card.Body>
-                  <Card.Title>Summary</Card.Title>
-                  <ListGroup variant="flush">
-                    <ListGroup.Item>
-                      Not Started: <span className="status-not-started">1</span>
-                    </ListGroup.Item>
-                    <ListGroup.Item>
-                      On Process: <span className="status-on-process">1</span>
-                    </ListGroup.Item>
-                    <ListGroup.Item>
-                      Complete: <span className="status-complete">1</span>
-                    </ListGroup.Item>
-                    <ListGroup.Item>
-                      Finished: <span className="status-finished">3</span>
-                    </ListGroup.Item>
-                    <ListGroup.Item>
-                      <strong>Tags:</strong> Lazy, Health
-                    </ListGroup.Item>
-                  </ListGroup>
-                </Card.Body>
-              </Card>
-            </Col>
+            
           </Row>
         </>
       ) : (
