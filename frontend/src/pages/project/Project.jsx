@@ -2,14 +2,14 @@ import React, { useState, useEffect } from "react";
 import { Button, Modal, Form } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faCommenting,
+  faComment,
   faEdit,
   faTrash,
   faPencilAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import "./project.css"; // Import the CSS file
 import axios from "axios";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 const Project = ({ updateSidebarProjectName }) => {
   const [completedTasks, setCompletedTasks] = useState([]);
@@ -94,10 +94,11 @@ const Project = ({ updateSidebarProjectName }) => {
     } catch (error) {
       console.error("Error deleting project:", error);
     }
+    setShowDeleteProjectModal(false);
   };
 
   const handleCheckboxChange = async (id, checked) => {
-    const updatedStatus = checked ? "finished" : "Not Started"; // Memastikan status yang diupdate
+    const updatedStatus = checked ? "finished" : "Not Started";
 
     try {
       const token = localStorage.getItem("token");
@@ -113,20 +114,29 @@ const Project = ({ updateSidebarProjectName }) => {
             ...task,
             status: updatedStatus,
           };
+          
         }
+        window.location.reload();
         return task;
       });
 
-      // Update list tugas yang selesai dan yang belum selesai
-      setCompletedTasks(
-        updatedTasks.filter((task) => task.status === "finished")
-      );
+      const taskToMove = updatedTasks.find((task) => task.id_task === id);
+      if (taskToMove) {
+        if (checked) {
+          setCompletedTasks([...completedTasks, taskToMove]);
+        } else {
+          setCompletedTasks(
+            completedTasks.filter((task) => task.id_task !== id)
+          );
+        }
+      }
+
       setTasks(updatedTasks);
     } catch (error) {
       console.error("Error updating task status:", error);
     }
   };
-
+  
   const handleSaveTask = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -154,6 +164,7 @@ const Project = ({ updateSidebarProjectName }) => {
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setTasks([...tasks, response.data]);
+        window.location.reload();
       } else if (modalMode === "edit") {
         await axios.put(
           `http://localhost:3004/${id_project}/tasks/${modalTask.id_task}`,
@@ -172,6 +183,7 @@ const Project = ({ updateSidebarProjectName }) => {
         );
       }
       setShowTaskModal(false);
+      window.location.reload();
     } catch (error) {
       console.error("Error saving task:", error);
     }
@@ -240,18 +252,18 @@ const Project = ({ updateSidebarProjectName }) => {
             </div>
           </div>
           <h5>
-            Current Tasks (
+            Current Projects (
             {tasks.filter((task) => task.status !== "finished").length})
           </h5>
           <TaskTable
-            tasks={tasks.filter((task) => task.status !== "finished")} // Menyaring tugas-tugas yang belum selesai
+            tasks={tasks.filter((task) => task.status !== "finished")}
             handleEdit={handleEdit}
             handleDelete={handleDelete}
-            handleCheckboxChange={handleCheckboxChange}
+            handleCheckboxChange={handleCheckboxChange} // Meneruskan fungsi handleCheckboxChange
             handleCommentClick={handleCommentClick}
           />
 
-          <h5 className="mt-5">Completed Tasks ({completedTasks.length})</h5>
+          <h5 className="mt-5">Completed Projects ({completedTasks.length})</h5>
           <TaskTable
             tasks={completedTasks}
             handleEdit={handleEdit}
@@ -434,48 +446,96 @@ const TaskTable = ({
   handleCheckboxChange,
   handleCommentClick,
 }) => {
+  const getPriorityClass = (priority) => {
+    switch (priority) {
+      case "low":
+        return "priority-low";
+      case "medium":
+        return "priority-medium";
+      case "high":
+        return "priority-high";
+      default:
+        return "";
+    }
+  };
+const formatDate = (dateString) => {
+  return dateString.split("T")[0];
+  };
+  const getStatusClass = (status) => {
+    switch (status) {
+      case "not started":
+        return "status-not-started";
+      case "on process":
+        return "status-on-process";
+      case "complete":
+        return "status-complete";
+      case "finished":
+        return "status-finished";
+      default:
+        return "";
+    }
+  };
   return (
-    <table className="table table-striped">
+    <table className="table table-bordered ">
       <thead>
         <tr>
-          <th>Check</th>
+          {/* <th>Check</th> */}
           <th>Task Name</th>
-          <th>Tag</th>
-          <th>Priority</th>
-          <th>Due Date</th>
-          <th>Status</th>
-          <th>Action</th>
+          <th className="text-center">Tag</th>
+          <th className="text-center">Priority</th>
+          <th className="text-center">Due Date</th>
+          <th className="text-center">Status</th>
+          <th className="text-center">Action</th>
         </tr>
       </thead>
       <tbody>
         {tasks.map((task) => (
           <tr key={task.id_task}>
-            <td>
+            {/* <td>
               <input
                 type="checkbox"
                 checked={task.status === "finished"}
-                onChange={(e) =>
-                  handleCheckboxChange(task.id_task, e.target.checked)
+                onChange={
+                  (e) => handleCheckboxChange(task.id_task, e.target.checked) // Memanggil handleCheckboxChange dengan id_task dan status checkbox
                 }
               />
-            </td>
+            </td> */}
             <td>
-              {task.name}
-              <button onClick={() => handleCommentClick(task.id_task)}>
-                <FontAwesomeIcon icon={faCommenting} />
-              </button>
+              <div className="d-flex align-items-center">
+                {task.name}
+                <FontAwesomeIcon
+                  icon={faComment}
+                  className="ms-auto"
+                  onClick={() => handleCommentClick(task.id_task)}
+                  style={{ cursor: "pointer" }}
+                />
+              </div>
             </td>
-            <td>{task.tag}</td>
-            <td>{task.priority}</td>
-            <td>{task.date}</td>
-            <td>{task.status}</td>
-            <td>
-              <button onClick={() => handleEdit(task.id_task)}>
-                <FontAwesomeIcon icon={faEdit} />
-              </button>
-              <button onClick={() => handleDelete(task.id_task)}>
-                <FontAwesomeIcon icon={faTrash} />
-              </button>
+            <td className="text-center">
+              <span className="tag-tag">{task.tag}</span>
+            </td>
+            <td className="prioritas text-center text-uppercase">
+              <span className={getPriorityClass(task.priority)}>
+                {task.priority}
+              </span>
+            </td>
+            <td className="text-center">{formatDate(task.date)}</td>
+            <td className={`text-center ${getStatusClass(task.status)}`}>
+              {task.status}
+            </td>
+            <td className="text-center">
+              <FontAwesomeIcon
+                icon={faEdit}
+                onClick={() => handleEdit(task.id_task)}
+                style={{ cursor: "pointer" }}
+              />
+
+              <FontAwesomeIcon
+                icon={faTrash}
+                onClick={() => handleDelete(task.id_task)}
+                className="ml-2 "
+                style={{ cursor: "pointer" }}
+              />
             </td>
           </tr>
         ))}

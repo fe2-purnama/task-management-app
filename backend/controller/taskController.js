@@ -98,13 +98,10 @@ const updateTask = (req, res) => {
       });
     });
   });
-};
-
-const updateTaskStatus = (req, res) => {
+};const updateTaskStatus = (req, res) => {
   const id = req.params.id;
-  const id_project = req.params.id_project;
-  const status = { status: req.body.status };
-  console.log(`Updating task status with id: ${id} for project: ${id_project} to status: ${status.status}`);
+  const status = req.body.status;
+  console.log(`Updating task status with id: ${id} to status: ${status}`);
 
   Task.getById(id, (err, task) => {
     if (err) {
@@ -118,28 +115,16 @@ const updateTaskStatus = (req, res) => {
       return res.status(404).send("Task not found");
     }
 
-    Project.getById(id_project, (err, project) => {
+    Task.updateStatus(id, status, (err, results) => {
       if (err) {
-        console.error("Error fetching project:", err);
+        console.error("Error updating task status:", err);
         return res.status(500).send(err);
       }
-
-      // Ensure the project exists
-      if (!project) {
-        console.error(`Project with id: ${id_project} not found`);
-        return res.status(404).send("Project not found");
-      }
-
-      Task.updateStatus(id, status, (err, results) => {
-        if (err) {
-          console.error("Error updating task status:", err);
-          return res.status(500).send(err);
-        }
-        res.json(results);
-      });
+      res.json(results);
     });
   });
 };
+
 
 const deleteTask = (req, res) => {
   const id = req.params.id;
