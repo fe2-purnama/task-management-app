@@ -16,6 +16,7 @@ const DashboardUser = () => {
     totalProjects: 0,
     completedProjects: 0,
   });
+  const [totalTasks, setTotalTasks] = useState(0); // Updated state for totalTasks
 
   const data = {
     labels: ['April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
@@ -48,7 +49,7 @@ const DashboardUser = () => {
     const fetchProjectStats = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get(
+        const projectResponse = await axios.get(
           "http://localhost:3004/projects", // Adjust endpoint as needed
           {
             headers: {
@@ -56,16 +57,29 @@ const DashboardUser = () => {
             },
           }
         );
-        console.log("Fetched project data:", response.data); // Debug log
-        // Assuming response.data contains an array of projects
-        const totalProjects = response.data.length;
-        const completedProjects = response.data.filter(project => project.status === 'completed').length;
+        console.log("Fetched project data:", projectResponse.data); // Debug log
+        // Assuming projectResponse.data contains an array of projects
+        const totalProjects = projectResponse.data.length;
+        const completedProjects = projectResponse.data.filter(project => project.status === 'completed').length;
         setProjectStats({ totalProjects, completedProjects });
+  
+        const taskResponse = await axios.get(
+          "http://localhost:3004/53/tasks", // Adjust endpoint as needed
+          {
+            headers: {
+              Authorization: `Bearer ${token}`, // Ensure token is sent with Bearer format
+            },
+          }
+        );
+        console.log("Fetched task data:", taskResponse.data); // Debug log
+        // Assuming taskResponse.data contains an array of tasks
+        const totalTasksCount = taskResponse.data.length; // Count all tasks
+        setTotalTasks(totalTasksCount); // Update state with totalTasksCount
       } catch (error) {
-        console.error("Failed to fetch project stats:", error);
+        console.error("Failed to fetch project or task stats:", error);
       }
     };
-
+  
     fetchProjectStats();
   }, []);
 
@@ -88,8 +102,8 @@ const DashboardUser = () => {
                   <div className="card-content">
                     <Card.Title className="fw-bold">Tasks</Card.Title>
                     <Card.Text className="card-text-custom">
-                      <h1 className="fw-bold">125</h1>
-                      <p className="ms-2">You have Task</p>
+                      <h1 className="fw-bold">{totalTasks}</h1> {/* Display totalTasks */}
+                      <p className="ms-2">You have {totalTasks} unfinished tasks</p> {/* Adjust message */}
                     </Card.Text>
                   </div>
                 </Card.Body>
@@ -111,7 +125,7 @@ const DashboardUser = () => {
             </Col>
           </Row>
           <Row className="mb-3">
-            <Col md={8}>
+            <Col md={12}>
               <Card className="card-hover">
                 <Card.Body>
                   <Card.Title className="fw-bold">Tasks Done</Card.Title>
@@ -119,30 +133,7 @@ const DashboardUser = () => {
                 </Card.Body>
               </Card>
             </Col>
-            <Col md={4}>
-              <Card className="card-hover">
-                <Card.Body>
-                  <Card.Title>Summary</Card.Title>
-                  <ListGroup variant="flush">
-                    <ListGroup.Item>
-                      Not Started: <span className="status-not-started">1</span>
-                    </ListGroup.Item>
-                    <ListGroup.Item>
-                      On Process: <span className="status-on-process">1</span>
-                    </ListGroup.Item>
-                    <ListGroup.Item>
-                      Complete: <span className="status-complete">1</span>
-                    </ListGroup.Item>
-                    <ListGroup.Item>
-                      Finished: <span className="status-finished">3</span>
-                    </ListGroup.Item>
-                    <ListGroup.Item>
-                      <strong>Tags:</strong> Lazy, Health
-                    </ListGroup.Item>
-                  </ListGroup>
-                </Card.Body>
-              </Card>
-            </Col>
+            
           </Row>
         </>
       ) : (

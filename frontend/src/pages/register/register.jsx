@@ -159,21 +159,6 @@ const Register = () => {
                 Login here
               </a>
             </div>
-
-            <div className="register-divider">
-              <span className="register-divider-text register-putih">or</span>
-            </div>
-
-            <div className="d-flex justify-content-center mb-2">
-              <Button className="btn-register-social w-50 mb-2">
-                <img
-                  src="/google.svg"
-                  alt="Google"
-                  className="me-2"
-                />{" "}
-                Sign Up with Google
-              </Button>
-            </div>
           </Card.Body>
         </Card>
       </div>

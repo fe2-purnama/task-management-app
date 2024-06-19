@@ -22,7 +22,9 @@ const Project = ({ updateSidebarProjectName }) => {
   const [modalMode, setModalMode] = useState("add");
   const [showProjectNameModal, setShowProjectNameModal] = useState(false);
   const [showDeleteProjectModal, setShowDeleteProjectModal] = useState(false);
-
+ const [showDeleteTaskModal, setShowDeleteTaskModal] = useState(false);
+  const [taskToDelete, setTaskToDelete] = useState(null);
+  
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -61,7 +63,33 @@ const Project = ({ updateSidebarProjectName }) => {
     fetchProjectDetails();
     fetchTasks();
   }, [id_project]);
+const confirmDeleteTask = (id) => {
+  const task = tasks.find((task) => task.id_task === id);
+  setTaskToDelete(task);
+  setShowDeleteTaskModal(true);
+  };
 
+  const handleDelete = async () => {
+    if (!taskToDelete) return;
+
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(
+        `http://localhost:3004/${id_project}/tasks/${taskToDelete.id_task}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setTasks(tasks.filter((task) => task.id_task !== taskToDelete.id_task));
+      setCompletedTasks(
+        completedTasks.filter((task) => task.id_task !== taskToDelete.id_task)
+      );
+      setShowDeleteTaskModal(false);
+      setTaskToDelete(null);
+    } catch (error) {
+      console.error("Error deleting task:", error);
+    }
+  };
   const handleEdit = (id) => {
     const task = tasks.find((task) => task.id_task === id);
     setModalTask(task);
@@ -69,18 +97,6 @@ const Project = ({ updateSidebarProjectName }) => {
     setShowTaskModal(true);
   };
 
-  const handleDelete = async (id) => {
-    try {
-      const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:3004/${id_project}/tasks/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setTasks(tasks.filter((task) => task.id_task !== id));
-      setCompletedTasks(completedTasks.filter((task) => task.id_task !== id));
-    } catch (error) {
-      console.error("Error deleting task:", error);
-    }
-  };
 
   const handleDeleteProject = async () => {
     try {
@@ -141,7 +157,7 @@ const Project = ({ updateSidebarProjectName }) => {
     try {
       const token = localStorage.getItem("token");
 
-      // Validate and set defaults if necessary
+      // Validasi dan set default jika diperlukan
       if (!modalTask.name.trim()) {
         alert("Task name cannot be empty");
         return;
@@ -151,10 +167,10 @@ const Project = ({ updateSidebarProjectName }) => {
         return;
       }
       if (!modalTask.tag) {
-        modalTask.tag = ""; // Set default tag if not provided
+        modalTask.tag = ""; // Set default tag jika tidak disediakan
       }
       if (!modalTask.date) {
-        modalTask.date = new Date().toISOString().split("T")[0]; // Set default date if not provided
+        modalTask.date = new Date().toISOString().split("T")[0]; // Set default tanggal jika tidak disediakan
       }
 
       if (modalMode === "add") {
@@ -214,7 +230,7 @@ const Project = ({ updateSidebarProjectName }) => {
     <div className="container-fluid mt-5 project-container">
       <div className="row">
         <div className="col-md-12">
-          <h2 className="d-flex align-items-center">
+          <h2 className="d-flex align-items-center fw-bold">
             Project: {projectName}
             <FontAwesomeIcon
               icon={faPencilAlt}
@@ -259,6 +275,7 @@ const Project = ({ updateSidebarProjectName }) => {
             tasks={tasks.filter((task) => task.status !== "finished")}
             handleEdit={handleEdit}
             handleDelete={handleDelete}
+            confirmDeleteTask={confirmDeleteTask}
             handleCheckboxChange={handleCheckboxChange} // Meneruskan fungsi handleCheckboxChange
             handleCommentClick={handleCommentClick}
           />
@@ -268,6 +285,7 @@ const Project = ({ updateSidebarProjectName }) => {
             tasks={completedTasks}
             handleEdit={handleEdit}
             handleDelete={handleDelete}
+            confirmDeleteTask={confirmDeleteTask}
             handleCheckboxChange={handleCheckboxChange}
             handleCommentClick={handleCommentClick}
           />
@@ -433,6 +451,26 @@ const Project = ({ updateSidebarProjectName }) => {
               </Button>
             </Modal.Footer>
           </Modal>
+          <Modal
+            show={showDeleteTaskModal}
+            onHide={() => setShowDeleteTaskModal(false)}
+          >
+            <Modal.Header closeButton>
+              <Modal.Title>Delete Task</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>Are you sure you want to delete this task?</Modal.Body>
+            <Modal.Footer>
+              <Button
+                variant="secondary"
+                onClick={() => setShowDeleteTaskModal(false)}
+              >
+                Close
+              </Button>
+              <Button variant="danger" onClick={handleDelete}>
+                Delete
+              </Button>
+            </Modal.Footer>
+          </Modal>
         </div>
       </div>
     </div>
@@ -443,6 +481,7 @@ const TaskTable = ({
   tasks,
   handleEdit,
   handleDelete,
+  confirmDeleteTask,
   handleCheckboxChange,
   handleCommentClick,
 }) => {
@@ -458,8 +497,8 @@ const TaskTable = ({
         return "";
     }
   };
-const formatDate = (dateString) => {
-  return dateString.split("T")[0];
+  const formatDate = (dateString) => {
+    return dateString.split("T")[0];
   };
   const getStatusClass = (status) => {
     switch (status) {
@@ -503,12 +542,13 @@ const formatDate = (dateString) => {
             <td>
               <div className="d-flex align-items-center">
                 {task.name}
-                <FontAwesomeIcon
-                  icon={faComment}
-                  className="ms-auto"
+                <Button
+                  variant="info"
+                  className="btn-sm me-2 ms-auto btn-comment "
                   onClick={() => handleCommentClick(task.id_task)}
-                  style={{ cursor: "pointer" }}
-                />
+                >
+                  <FontAwesomeIcon icon={faComment} />
+                </Button>
               </div>
             </td>
             <td className="text-center">
@@ -524,18 +564,20 @@ const formatDate = (dateString) => {
               {task.status}
             </td>
             <td className="text-center">
-              <FontAwesomeIcon
-                icon={faEdit}
+              <Button
+                variant="warning"
+                className="btn-sm me-2 btn-edit"
                 onClick={() => handleEdit(task.id_task)}
-                style={{ cursor: "pointer" }}
-              />
-
-              <FontAwesomeIcon
-                icon={faTrash}
-                onClick={() => handleDelete(task.id_task)}
-                className="ml-2 "
-                style={{ cursor: "pointer" }}
-              />
+              >
+                <FontAwesomeIcon icon={faEdit} />
+              </Button>
+              <Button
+                variant="danger"
+                className="btn-sm btn-sampah"
+                onClick={() => confirmDeleteTask(task.id_task)}
+              >
+                <FontAwesomeIcon icon={faTrash} />
+              </Button>
             </td>
           </tr>
         ))}
