@@ -70,7 +70,7 @@ app.use("/contact", contactRouter)
 app.use('/:id/status', taskRoutes);
 
 app.get("/", (req, res) => {
-  res.send(" ");
+  res.send("Terhubung");
 });
 
 app.listen(3004, () => {

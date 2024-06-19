@@ -1,10 +1,11 @@
 let mysql = require("mysql2");
 
 let connection = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "",
-  database: "task_manager",
+  host:        'educalab.id',
+  user:        'CfSqkF2G8IFMMVv0',
+  password:    'vx3OgVOHB4lHNGbu',
+  database:    'SYYTC8OptA6xAqy6',
+  port: 3307
 });
 
 connection.connect(function (error) {
