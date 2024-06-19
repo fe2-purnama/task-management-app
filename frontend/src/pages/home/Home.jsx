@@ -28,6 +28,8 @@ const Home = () => {
               <Button type="submit" className="btn-sign-up-home">
                 Sign up - it's free!
               </Button>
+              <a href="/register">
+              </a>
             </Form>
           </Col>
           <Col md={6} className="image-container-home">
