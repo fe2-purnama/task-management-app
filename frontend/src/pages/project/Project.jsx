@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Button,
-  Modal,
-  Form,
-} from "react-bootstrap";
+import { Button, Modal, Form } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCommenting,
@@ -11,7 +7,7 @@ import {
   faTrash,
   faPencilAlt,
 } from "@fortawesome/free-solid-svg-icons";
-import "./project.css";
+import "./project.css"; // Import the CSS file
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 
@@ -28,23 +24,6 @@ const Project = ({ updateSidebarProjectName }) => {
   const [showDeleteProjectModal, setShowDeleteProjectModal] = useState(false);
 
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const fetchCompletedTasks = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const response = await axios.get(
-          `http://localhost:3004/${id_project}/tasks?status=Finished`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        setCompletedTasks(response.data);
-      } catch (error) {
-        console.error("Error fetching completed tasks:", error);
-      }
-    };
-
-    fetchCompletedTasks();
-  }, [id_project]);
 
   useEffect(() => {
     const fetchProjectDetails = async () => {
@@ -69,7 +48,11 @@ const Project = ({ updateSidebarProjectName }) => {
           `http://localhost:3004/${id_project}/tasks`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        setTasks(response.data);
+        const allTasks = response.data;
+        setTasks(allTasks);
+        setCompletedTasks(
+          allTasks.filter((task) => task.status === "finished")
+        );
       } catch (error) {
         console.error("Error fetching tasks:", error);
       }
@@ -93,6 +76,7 @@ const Project = ({ updateSidebarProjectName }) => {
         headers: { Authorization: `Bearer ${token}` },
       });
       setTasks(tasks.filter((task) => task.id_task !== id));
+      setCompletedTasks(completedTasks.filter((task) => task.id_task !== id));
     } catch (error) {
       console.error("Error deleting task:", error);
     }
@@ -105,40 +89,49 @@ const Project = ({ updateSidebarProjectName }) => {
         headers: { Authorization: `Bearer ${token}` },
       });
       setShowDeleteProjectModal(false);
-      navigate('/dashboarduser');
+      navigate("/dashboarduser");
       window.location.reload();
     } catch (error) {
       console.error("Error deleting project:", error);
     }
   };
 
-  const handleCheckboxChange = (id, checked) => {
-    const updatedTasks = tasks.map((task) => {
-      if (task.id_task === id) {
-        return {
-          ...task,
-          status: checked ? "Finished" : "Not Started",
-        };
-      }
-      return task;
-    });
-    const taskToMove = updatedTasks.find((task) => task.id_task === id);
-    if (taskToMove) {
-      if (checked) {
-        setCompletedTasks([...completedTasks, taskToMove]);
-      } else {
-        setCompletedTasks(completedTasks.filter((task) => task.id_task !== id));
-      }
-    }
+  const handleCheckboxChange = async (id, checked) => {
+    const updatedStatus = checked ? "finished" : "Not Started"; // Memastikan status yang diupdate
 
-    setTasks(updatedTasks);
+    try {
+      const token = localStorage.getItem("token");
+      await axios.put(
+        `http://localhost:3004/tasks/${id}/status`,
+        { status: updatedStatus },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      const updatedTasks = tasks.map((task) => {
+        if (task.id_task === id) {
+          return {
+            ...task,
+            status: updatedStatus,
+          };
+        }
+        return task;
+      });
+
+      // Update list tugas yang selesai dan yang belum selesai
+      setCompletedTasks(
+        updatedTasks.filter((task) => task.status === "finished")
+      );
+      setTasks(updatedTasks);
+    } catch (error) {
+      console.error("Error updating task status:", error);
+    }
   };
 
   const handleSaveTask = async () => {
     try {
       const token = localStorage.getItem("token");
 
-      // Validate and set defaults if necessary
+      // Validasi dan set default jika diperlukan
       if (!modalTask.name.trim()) {
         alert("Task name cannot be empty");
         return;
@@ -148,10 +141,10 @@ const Project = ({ updateSidebarProjectName }) => {
         return;
       }
       if (!modalTask.tag) {
-        modalTask.tag = ""; // Set default tag if not provided
+        modalTask.tag = ""; // Set default tag jika tidak disediakan
       }
       if (!modalTask.date) {
-        modalTask.date = new Date().toISOString().split("T")[0]; // Set default date if not provided
+        modalTask.date = new Date().toISOString().split("T")[0]; // Set default tanggal jika tidak disediakan
       }
 
       if (modalMode === "add") {
@@ -169,6 +162,11 @@ const Project = ({ updateSidebarProjectName }) => {
         );
         setTasks(
           tasks.map((task) =>
+            task.id_task === modalTask.id_task ? modalTask : task
+          )
+        );
+        setCompletedTasks(
+          completedTasks.map((task) =>
             task.id_task === modalTask.id_task ? modalTask : task
           )
         );
@@ -194,19 +192,14 @@ const Project = ({ updateSidebarProjectName }) => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setShowProjectNameModal(false);
-      window.location.reload(); 
+      window.location.reload();
     } catch (error) {
       console.error("Error updating project name:", error);
     }
   };
 
-  useEffect(() => {
-    const completed = tasks.filter((task) => task.status === "Finished");
-    setCompletedTasks(completed);
-  }, [tasks]);
-
   return (
-    <div className="container-fluid mt-5">
+    <div className="container-fluid mt-5 project-container">
       <div className="row">
         <div className="col-md-12">
           <h2 className="d-flex align-items-center">
@@ -246,16 +239,19 @@ const Project = ({ updateSidebarProjectName }) => {
               </button>
             </div>
           </div>
-          <h5>Current Projects ({tasks.length})</h5>
+          <h5>
+            Current Tasks (
+            {tasks.filter((task) => task.status !== "finished").length})
+          </h5>
           <TaskTable
-            tasks={tasks.filter((task) => task.status !== "Finished")}
+            tasks={tasks.filter((task) => task.status !== "finished")} // Menyaring tugas-tugas yang belum selesai
             handleEdit={handleEdit}
             handleDelete={handleDelete}
             handleCheckboxChange={handleCheckboxChange}
             handleCommentClick={handleCommentClick}
           />
-          <h5 className="mt-5">Completed Projects ({completedTasks.length})</h5>
-          {/* Completed project table */}
+
+          <h5 className="mt-5">Completed Tasks ({completedTasks.length})</h5>
           <TaskTable
             tasks={completedTasks}
             handleEdit={handleEdit}
@@ -290,7 +286,6 @@ const Project = ({ updateSidebarProjectName }) => {
                     onChange={(e) =>
                       setModalTask({
                         ...modalTask,
-
                         deskripsi: e.target.value,
                       })
                     }
@@ -345,7 +340,7 @@ const Project = ({ updateSidebarProjectName }) => {
                     <option value="Not Started">Not Started</option>
                     <option value="On Process">On Process</option>
                     <option value="Complete">Complete</option>
-                    <option value="Finished">Finished</option>
+                    <option value="finished">Finished</option>
                   </Form.Control>
                 </Form.Group>
               </Form>
@@ -458,7 +453,7 @@ const TaskTable = ({
             <td>
               <input
                 type="checkbox"
-                checked={task.status === "Finished"}
+                checked={task.status === "finished"}
                 onChange={(e) =>
                   handleCheckboxChange(task.id_task, e.target.checked)
                 }
