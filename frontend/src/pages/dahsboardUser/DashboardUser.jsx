@@ -50,7 +50,7 @@ const DashboardUser = () => {
       try {
         const token = localStorage.getItem("token");
         const projectResponse = await axios.get(
-          "http://localhost:3004/projects", // Adjust endpoint as needed
+          "https://api-msib-6-travel-management-03.educalab.id/projects", // Adjust endpoint as needed
           {
             headers: {
               Authorization: `Bearer ${token}`, // Ensure token is sent with Bearer format
@@ -64,7 +64,7 @@ const DashboardUser = () => {
         setProjectStats({ totalProjects, completedProjects });
   
         const taskResponse = await axios.get(
-          "http://localhost:3004/53/tasks", // Adjust endpoint as needed
+          "https://api-msib-6-travel-management-03.educalab.id/53/tasks", // Adjust endpoint as needed
           {
             headers: {
               Authorization: `Bearer ${token}`, // Ensure token is sent with Bearer format

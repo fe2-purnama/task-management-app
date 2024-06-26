@@ -42,12 +42,16 @@ const Settingan = () => {
       formData.append('foto', file);
   
       try {
-        const response = await axios.put('http://localhost:3004/profile/foto', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            'Authorization': `Bearer ${getToken()}`
+        const response = await axios.put(
+          "https://api-msib-6-travel-management-03.educalab.id/profile/foto",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${getToken()}`,
+            },
           }
-        });
+        );
         setProfilePic(response.data.foto); // Assuming the column name matches the server response
         showModalMessage("Profile picture updated successfully!");
       } catch (error) {
@@ -66,9 +70,13 @@ const Settingan = () => {
 
   const handleConfirmUsername = async () => {
     try {
-      await axios.put('http://localhost:3004/profile/username', { username: newUsername }, {
-        headers: { Authorization: `Bearer ${getToken()}` }
-      });
+      await axios.put(
+        "https://api-msib-6-travel-management-03.educalab.id/profile/username",
+        { username: newUsername },
+        {
+          headers: { Authorization: `Bearer ${getToken()}` },
+        }
+      );
       showModalMessage("Username updated successfully!");
       setNewUsername("");
     } catch (error) {
@@ -85,10 +93,10 @@ const Settingan = () => {
 
     try {
       await axios.put(
-        'http://localhost:3004/profile/password',
+        "https://api-msib-6-travel-management-03.educalab.id/profile/password",
         { currentPassword, password: newPassword, confirmPassword },
         {
-          headers: { Authorization: `Bearer ${getToken()}` }
+          headers: { Authorization: `Bearer ${getToken()}` },
         }
       );
       showModalMessage("Password changed successfully!");
@@ -103,9 +111,13 @@ const Settingan = () => {
 
   const handleConfirmEmail = async () => {
     try {
-      await axios.put('http://localhost:3004/profile/email', { email: newEmail }, {
-        headers: { Authorization: `Bearer ${getToken()}` }
-      });
+      await axios.put(
+        "https://api-msib-6-travel-management-03.educalab.id/profile/email",
+        { email: newEmail },
+        {
+          headers: { Authorization: `Bearer ${getToken()}` },
+        }
+      );
       showModalMessage("Email updated successfully!");
       setNewEmail("");
     } catch (error) {

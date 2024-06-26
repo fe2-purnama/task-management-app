@@ -32,7 +32,7 @@ const Project = ({ updateSidebarProjectName }) => {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          `http://localhost:3004/projects/${id_project}`,
+          `https://api-msib-6-travel-management-03.educalab.id/projects/${id_project}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -47,7 +47,7 @@ const Project = ({ updateSidebarProjectName }) => {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          `http://localhost:3004/${id_project}/tasks`,
+          `https://api-msib-6-travel-management-03.educalab.id/${id_project}/tasks`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         const allTasks = response.data;
@@ -75,7 +75,7 @@ const confirmDeleteTask = (id) => {
     try {
       const token = localStorage.getItem("token");
       await axios.delete(
-        `http://localhost:3004/${id_project}/tasks/${taskToDelete.id_task}`,
+        `https://api-msib-6-travel-management-03.educalab.id/${id_project}/tasks/${taskToDelete.id_task}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -101,9 +101,12 @@ const confirmDeleteTask = (id) => {
   const handleDeleteProject = async () => {
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:3004/projects/${id_project}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.delete(
+        `https://api-msib-6-travel-management-03.educalab.id/projects/${id_project}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setShowDeleteProjectModal(false);
       navigate("/dashboarduser");
       window.location.reload();
@@ -119,7 +122,7 @@ const confirmDeleteTask = (id) => {
     try {
       const token = localStorage.getItem("token");
       await axios.put(
-        `http://localhost:3004/tasks/${id}/status`,
+        `https://api-msib-6-travel-management-03.educalab.id/tasks/${id}/status`,
         { status: updatedStatus },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -175,7 +178,7 @@ const confirmDeleteTask = (id) => {
 
       if (modalMode === "add") {
         const response = await axios.post(
-          `http://localhost:3004/${id_project}/tasks`,
+          `https://api-msib-6-travel-management-03.educalab.id/${id_project}/tasks`,
           modalTask,
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -183,7 +186,7 @@ const confirmDeleteTask = (id) => {
         window.location.reload();
       } else if (modalMode === "edit") {
         await axios.put(
-          `http://localhost:3004/${id_project}/tasks/${modalTask.id_task}`,
+          `https://api-msib-6-travel-management-03.educalab.id/${id_project}/tasks/${modalTask.id_task}`,
           modalTask,
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -215,7 +218,7 @@ const confirmDeleteTask = (id) => {
     try {
       const token = localStorage.getItem("token");
       await axios.put(
-        `http://localhost:3004/projects/${id_project}`,
+        `https://api-msib-6-travel-management-03.educalab.id/projects/${id_project}`,
         { nama: projectName },
         { headers: { Authorization: `Bearer ${token}` } }
       );

@@ -44,7 +44,7 @@ const DashboardAdmin = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          "http://localhost:3004/users/dashboard/stats",
+          "https://api-msib-6-travel-management-03.educalab.id/users/dashboard/stats",
           {
             headers: {
               Authorization: `Bearer ${token}`, // Ensure token is sent with Bearer format

@@ -34,9 +34,12 @@ const Sidebar = ({ user }) => {
     const fetchProjects = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get("http://localhost:3004/projects", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await axios.get(
+          "https://api-msib-6-travel-management-03.educalab.id/projects",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         setProjects(response.data);
       } catch (error) {
         console.error("Failed to fetch projects:", error);
@@ -50,7 +53,7 @@ const Sidebar = ({ user }) => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.post(
-        "http://localhost:3004/projects",
+        "https://api-msib-6-travel-management-03.educalab.id/projects",
         { nama: newProjectName },
         {
           headers: { Authorization: `Bearer ${token}` },

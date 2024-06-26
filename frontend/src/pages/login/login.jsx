@@ -17,7 +17,7 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:3004/login/auth", {
+      const response = await fetch("https://api-msib-6-travel-management-03.educalab.id/login/auth", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -36,13 +36,16 @@ const Login = () => {
         login(user);
         console.log("Login berhasil, mengarahkan ke dashboard...");
 
-        const profileResponse = await fetch("http://localhost:3004/profile", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const profileResponse = await fetch(
+          "https://api-msib-6-travel-management-03.educalab.id/profile",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         const profileData = await profileResponse.json();
         console.log("Profil pengguna:", profileData);
         localStorage.setItem("profile", JSON.stringify(profileData));

@@ -18,11 +18,14 @@ class UserList extends Component {
   fetchUsers = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get("http://localhost:3004/users", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.get(
+        "https://api-msib-6-travel-management-03.educalab.id/users",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       this.setState({ users: response.data });
     } catch (error) {
@@ -46,7 +49,7 @@ class UserList extends Component {
       try {
         const token = localStorage.getItem("token");
         await axios.delete(
-          `http://localhost:3004/users/${userToDelete.id_user}`,
+          `https://api-msib-6-travel-management-03.educalab.id/users/${userToDelete.id_user}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

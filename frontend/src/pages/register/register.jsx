@@ -22,13 +22,16 @@ const Register = () => {
     const user = { username, email, pass, role };
 
     try {
-      const response = await fetch("http://localhost:3004/register/save", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(user),
-      });
+      const response = await fetch(
+        "https://api-msib-6-travel-management-03.educalab.id/register/save",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(user),
+        }
+      );
 
       if (response.ok) {
         toast.success("Registration successful!", {

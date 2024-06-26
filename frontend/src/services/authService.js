@@ -13,11 +13,14 @@ export const clearUserFromLocalStorage = () => {
 
 export const loginUser = async (usernameOrEmail, password) => {
   try {
-    const response = await fetch("http://localhost:5000/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ usernameOrEmail, password }),
-    });
+    const response = await fetch(
+      "https://api-msib-6-travel-management-03.educalab.id/login",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ usernameOrEmail, password }),
+      }
+    );
 
     const data = await response.json();
     if (response.ok) {
